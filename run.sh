@@ -1,15 +1,11 @@
 #!/bin/bash
 
-if [ -d ./build/ ]; then
-    echo "./build/ exist"
-else
+if [ ! -d ./build/ ]; then
     mkdir ./build
     echo "Create ./build/"
 fi
 
-if [ -d ./bin/ ]; then
-    echo "./bin/ exist"
-else
+if [ ! -d ./bin/ ]; then
     mkdir ./bin
     echo "Create ./bin/"
 fi

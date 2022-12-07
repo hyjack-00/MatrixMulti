@@ -12,17 +12,9 @@
 #include <queue>
 #include <functional>  // greater<>
 
+#include <fstream>
 
 using namespace std;
-
-#define Now std::chrono::system_clock::now()
-#define Dur(start,end) static_cast<std::chrono::duration<double>>((end)-(start)).count()
-/* 
-    auto start = Now;
-    //...
-    auto end = Now;
-    cout << Dur(start, end) << endl;
-*/
 
 #define LOOP_S  10
 #define LOOP_M  50
@@ -32,6 +24,20 @@ using namespace std;
 #define RAND_SEED2 20221123
 #define RAND_UB 10  // [LB, UB)
 #define RAND_LB 0
+
+// 文件IO
+ofstream ofs;
+ofs.open("output1.txt", ios::out);  // ofs.close() in main function
+
+// 计时简化
+/* 
+    auto start = Now;
+    //...
+    auto end = Now;
+    cout << Dur(start, end) << endl;
+*/
+#define Now std::chrono::system_clock::now()
+#define Dur(start,end) static_cast<std::chrono::duration<double>>((end)-(start)).count()
 
 // Random init
 template <typename T>
@@ -62,6 +68,10 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
 
 void test_tile_precise() {
     cout << "Precise tiling test:" << endl;
+    constexpr int loop = 1000, size = 4096, Tsize = 64;
+    Mat_1D<int> A(size), B(size), C(size);
+    rand_mat_1D(A, RAND_SEED1);
+    rand_mat_1D(B, RAND_SEED2);
 }
 
 void test_tile_reg(double &reg, double &no_reg) {
@@ -69,6 +79,8 @@ void test_tile_reg(double &reg, double &no_reg) {
     cout << "Tiling & register test:" << endl;
     constexpr int loop = 1000, size = 4096, Tsize = 64;
     Mat_1D<int> A(size), B(size), C(size);
+    rand_mat_1D(A, RAND_SEED1);
+    rand_mat_1D(B, RAND_SEED2);
 
     auto start = Now;
     for (int i = 0; i < loop; i ++) {
@@ -221,4 +233,5 @@ int main() {
         test_tile_reg(r, nr);
     }
     cout << "Test end." << endl;
+    ofs.close();
 }

@@ -27,7 +27,7 @@ using namespace std;
 
 // 文件IO
 ofstream ofs;
-ofs.open("output1.txt", ios::out);  // ofs.close() in main function
+string ouput_file = "./output/output1.txt";
 
 // 计时简化
 /* 
@@ -226,6 +226,9 @@ void test_reg_restrict() {
 
 int main() {
     cout << "Test begin." << endl;
+    cout << "Output File: " << ouput_file << endl;
+    ofs.open(ouput_file, ios::out);
+
     double r = 0, nr = 0;
     for (int i = 0; i < 1000; i ++) {
         // test_mat_access_speed();

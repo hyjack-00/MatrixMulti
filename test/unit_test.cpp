@@ -64,9 +64,10 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
 }
 
 
-// Unit test -------------------------------
+// Unit test -----------------------------------------------------------
 
-void test_tile_precise(ostream &os) {
+void test_tile_precise() {
+    ostream &os = ofs;
     os << "Precise tiling test:" << endl;
     constexpr int loop = 10, size = 2048;
     Mat_1D<int> A(size), B(size), C(size);
@@ -227,6 +228,7 @@ void test_reg_restrict() {
 
 int main() {
     cout << "Test begin." << endl;
+    
     cout << "Output File: " << ouput_file << endl;
     ofs.open(ouput_file, ios::out);
 
@@ -235,7 +237,7 @@ int main() {
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile_reg(r, nr);
-        test_tile_precise(ofs);
+        test_tile_precise();
     }
     cout << "Test end." << endl;
     ofs.close();

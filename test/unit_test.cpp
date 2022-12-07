@@ -27,7 +27,7 @@ using namespace std;
 
 // 文件IO
 ofstream ofs;
-string ouput_file = "./output/output1.txt";
+string ouput_file = "../output/output1.txt";
 
 // 计时简化
 /* 
@@ -66,12 +66,13 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
 
 // Unit test -------------------------------
 
-void test_tile_precise() {
-    cout << "Precise tiling test:" << endl;
-    constexpr int loop = 1000, size = 4096, Tsize = 64;
+void test_tile_precise(ostream &os) {
+    os << "Precise tiling test:" << endl;
+    constexpr int loop = 10, size = 2048;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
+    os << loop << size << endl;
 }
 
 void test_tile_reg(double &reg, double &no_reg) {
@@ -229,11 +230,12 @@ int main() {
     cout << "Output File: " << ouput_file << endl;
     ofs.open(ouput_file, ios::out);
 
-    double r = 0, nr = 0;
-    for (int i = 0; i < 1000; i ++) {
+    // double r = 0, nr = 0;
+    for (int i = 0; i < 10; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        test_tile_reg(r, nr);
+        // test_tile_reg(r, nr);
+        test_tile_precise(ofs);
     }
     cout << "Test end." << endl;
     ofs.close();

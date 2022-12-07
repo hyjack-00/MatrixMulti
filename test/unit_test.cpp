@@ -74,6 +74,7 @@ void test_tile_precise() {
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
     os << loop << size << endl;
+    os << 1 << endl;
 }
 
 void test_tile_reg(double &reg, double &no_reg) {

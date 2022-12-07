@@ -61,7 +61,7 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
 // Unit test -------------------------------
 
 void test_tile_precise() {
-    
+    cout << "Precise tiling test:" << endl;
 }
 
 void test_tile_reg(double &reg, double &no_reg) {

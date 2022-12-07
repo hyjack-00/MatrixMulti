@@ -232,12 +232,12 @@ int main() {
     cout << "Output File: " << ouput_file << endl;
     ofs.open(ouput_file, ios::out);
 
-    // double r = 0, nr = 0;
+    double r = 0, nr = 0;
     for (int i = 0; i < 10; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        // test_tile_reg(r, nr);
-        test_tile_precise();
+        test_tile_reg(r, nr);
+        // test_tile_precise();
     }
     cout << "Test end." << endl;
     ofs.close();

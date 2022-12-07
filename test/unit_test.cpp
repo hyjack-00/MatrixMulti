@@ -60,7 +60,12 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
 
 // Unit test -------------------------------
 
-void test_tile_reg() {
+void test_tile_precise() {
+    
+}
+
+void test_tile_reg(double &reg, double &no_reg) {
+    // 结果：几乎无区别
     cout << "Tiling & register test:" << endl;
     constexpr int loop = 1000, size = 4096, Tsize = 64;
     Mat_1D<int> A(size), B(size), C(size);
@@ -71,7 +76,8 @@ void test_tile_reg() {
         mm_1D_tile_2pow_reg(A.data, B.data, C.data, size, Tsize, Tsize, Tsize);
     }
     auto end = Now;
-    cout << "Tile       : " << Dur(start, end) << endl;
+    reg += Dur(start, end);
+    cout << "Tile       : " << reg << endl;
 
     start = Now;
     for (int i = 0; i < loop; i ++) {
@@ -79,7 +85,8 @@ void test_tile_reg() {
         mm_1D_tile_2pow(A.data, B.data, C.data, size, Tsize, Tsize, Tsize);
     }
     end = Now;
-    cout << "Tile & Reg : " << Dur(start, end) << endl;
+    no_reg += Dur(start, end);
+    cout << "Tile & Reg : " << no_reg << endl;
 }
 
 struct Rec_tile {
@@ -207,11 +214,11 @@ void test_reg_restrict() {
 
 int main() {
     cout << "Test begin." << endl;
-
-    for (int i = 0; i < 20; i ++) {
+    double r = 0, nr = 0;
+    for (int i = 0; i < 1000; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        test_tile_reg();
+        test_tile_reg(r, nr);
     }
     cout << "Test end." << endl;
 }

@@ -8,11 +8,6 @@
 #define N10 1024
 #define N12 4096
 
-// General Matrix
-#define GM_M 1024
-#define GM_L 1024
-#define GM_N 1024
-
 
 //# MATRIX DEFINITION
 // Square Matrix
@@ -72,7 +67,7 @@ struct Mat_2C {
     }
 };
 
-//# BASIC FUNCTIONS
+//# BASIC MATRIX FUNC
 // Benchmark MM (Matrix Multiplication)
 // Mat_1D 
 template <typename T>
@@ -81,17 +76,6 @@ void mm_1D_benchmark(T *A, T *B, T *C, int size) {
         for (int k = 0; k < size; k ++) {
             for (int j = 0; j < size; j ++) {
                 C[i*size+j] += A[i*size+k] * B[k*size+j];
-            }
-        }
-    }
-}
-template <typename T>
-void mm_1D_benchmark_reg(T *A, T *B, T *C, int size) {
-    for (register int i = 0; i < size; i ++) {
-        for (register int k = 0; k < size; k ++) {
-            register int A_ik = A[i*size+k];
-            for (register int j = 0; j < size; j ++) {
-                C[i*size+j] += A_ik * B[k*size+j];
             }
         }
     }
@@ -108,15 +92,3 @@ void mm_2C_benchmark(T **A, T **B, T **C, int size) {
         }
     }
 }
-template <typename T>
-void mm_2C_benchmark_reg(T **A, T **B, T **C, int size) {
-    for (register int i = 0; i < size; i ++) {
-        for (register int k = 0; k < size; k ++) {
-            register int A_ik = A[i][k];
-            for (register int j = 0; j < size; j ++) {
-                C[i][j] += A_ik * B[k][j];
-            }
-        }
-    }
-}
-

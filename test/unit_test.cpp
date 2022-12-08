@@ -3,6 +3,7 @@
 #include "MM_neon.h"
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <stdlib.h>
 #include <string.h>
@@ -12,24 +13,18 @@
 #include <queue>
 #include <functional>  // greater<>
 
-#include <fstream>
-
 using namespace std;
 
 #define LOOP_S  10
 #define LOOP_M  50
 #define LOOP_L  100
 
-#define RAND_SEED1 20221124
-#define RAND_SEED2 20221123
-#define RAND_UB 10  // [LB, UB)
-#define RAND_LB 0
-
-// 文件IO
+// File IO
+#define OS cout  // 快速切换输出源
 ofstream ofs;
-string ouput_file = "../output/output1.txt";
+string ouput_file = "output/output1.txt";
 
-// 计时简化
+// Simplified time counter
 /* 
     auto start = Now;
     //...
@@ -39,42 +34,27 @@ string ouput_file = "../output/output1.txt";
 #define Now std::chrono::system_clock::now()
 #define Dur(start,end) static_cast<std::chrono::duration<double>>((end)-(start)).count()
 
-// Random init
-template <typename T>
-void rand_mat_1D(Mat_1D<T> &M, unsigned int seed) {
-}
-template <>
-void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
-    srand(seed);
-    int sz = M.size;
-    for (int i = 0; i < sz; i ++) 
-        for (int j = 0; j < sz; j ++)
-            M.data[i*sz+j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
-}
+struct Rec_tile;  // 用来记录最优分块
 
-template <typename T>
-void rand_mat_2C(Mat_2C<T> &M, unsigned int seed) {
-}
-template <>
-void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
-    srand(seed);
-    for (int i = 0; i < M.size; i ++)
-        for (int j = 0; j < M.size; j ++)
-            M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
-}
+// Random init (Implemented after main())
+#define RAND_SEED1 20221124
+#define RAND_SEED2 20221123
+#define RAND_UB 10000  // [LB, UB)
+#define RAND_LB 0
+void rand_mat_1D(Mat_1D<int> &M, unsigned int seed);
+void rand_mat_2C(Mat_2C<int> &M, unsigned int seed);
 
 
 // Unit test -----------------------------------------------------------
 
 void test_tile_precise() {
-    ostream &os = ofs;
-    os << "Precise tiling test:" << endl;
+    // ostream &os = ofs;
     constexpr int loop = 10, size = 2048;
+    OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
-    os << loop << size << endl;
-    os << 1 << endl;
+
 }
 
 void test_tile_reg(double &reg, double &no_reg) {
@@ -114,18 +94,19 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
 }
 void test_tile() {
     cout << "Tiling test:" << endl;
-    constexpr int loop = 100, size = 4096;
+    constexpr int loop = 10, size = 1024;
     Mat_1D<int> A(size), B(size), C(size);
+    rand_mat_1D(A, RAND_SEED1);
+    rand_mat_1D(B, RAND_SEED2);
 
-    // cout << "  Ti   Tj   Tk   Time" << endl;
-    
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
 
-    for (int Ti = 8; Ti <= 1024; Ti *= 2) {
-        for (int Tj = 8; Tj <= 64; Tj *= 2) {
-            for (int Tk = 8; Tk <= 64; Tk *= 2) {
-                // cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+    cout << "  Ti   Tj   Tk   Time" << endl;
+    for (int Ti = 1; Ti <= size; Ti *= 2) {
+        for (int Tj = 1; Tj <= size; Tj *= 2) {
+            for (int Tk = 1; Tk <= size; Tk *= 2) {
+                cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     memset(C.data, 0, sizeof(int)*size*size);
@@ -133,13 +114,13 @@ void test_tile() {
                 }
                 auto end = Now;
                 double dur = Dur(start, end);
-                // cout << dur;
+                cout << dur;
                 if (dur < q.top().time) {  // 进入前20
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, Tk, dur));
-                    // cout << " recorded";
+                    cout << " recorded";
                 }
-                // cout << endl;
+                cout << endl;
             }
         }
     }
@@ -232,14 +213,29 @@ int main() {
     
     cout << "Output File: " << ouput_file << endl;
     ofs.open(ouput_file, ios::out);
-
-    double r = 0, nr = 0;
+    
+    // double r = 0, nr = 0;
     for (int i = 0; i < 10; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        test_tile_reg(r, nr);
+        test_tile();
+        // test_tile_reg(r, nr);
         // test_tile_precise();
     }
     cout << "Test end." << endl;
     ofs.close();
+}
+
+void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
+    srand(seed);
+    int sz = M.size;
+    for (int i = 0; i < sz; i ++) 
+        for (int j = 0; j < sz; j ++)
+            M.data[i*sz+j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
+    srand(seed);
+    for (int i = 0; i < M.size; i ++)
+        for (int j = 0; j < M.size; j ++)
+            M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }

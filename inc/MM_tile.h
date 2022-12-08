@@ -1,15 +1,13 @@
 #pragma once
 #include "matrix_def.h"
 
+#define MIN(x,y) (((x)<(y))?(x):(y))
+
 template <typename T>
 void mm_1D_tile_2pow(T *A, T *B, T *C, int size, int Ti, int Tj, int Tk) {
-    int nii = size / Ti;
-    int njj = size / Tj;
-    int nkk = size / Tk;
-
-    for (int ii = 0; ii < nii; ii += Ti) {
-        for (int kk = 0; kk < nkk; kk += Tk) {
-            for (int jj = 0; jj < njj; jj += Tj) {
+    for (int ii = 0; ii < size; ii += Ti) {
+        for (int kk = 0; kk < size; kk += Tk) {
+            for (int jj = 0; jj < size; jj += Tj) {
                 for (int i = ii; i < ii+Ti; i ++) {
                     for (int k = kk; k < kk+Tk; k ++) {
                         for (int j = jj; j < jj+Tj; j ++) {
@@ -24,13 +22,9 @@ void mm_1D_tile_2pow(T *A, T *B, T *C, int size, int Ti, int Tj, int Tk) {
 
 template <typename T>
 void mm_1D_tile_2pow_reg(T *A, T *B, T *C, int size, int Ti, int Tj, int Tk) {
-    int nii = size / Ti;
-    int njj = size / Tj;
-    int nkk = size / Tk;
-
-    for (register int ii = 0; ii < nii; ii += Ti) {
-        for (register int kk = 0; kk < nkk; kk += Tk) {
-            for (register int jj = 0; jj < njj; jj += Tj) {
+    for (register int ii = 0; ii < size; ii += Ti) {
+        for (register int kk = 0; kk < size; kk += Tk) {
+            for (register int jj = 0; jj < size; jj += Tj) {
                 register int iend = ii+Ti;
                 for (register int i = ii; i < iend; i ++) {
                     register int kend = kk+Tk;
@@ -49,15 +43,17 @@ void mm_1D_tile_2pow_reg(T *A, T *B, T *C, int size, int Ti, int Tj, int Tk) {
 
 template <typename T>
 void mm_1D_tile_anyT(T *A, T *B, T *C, int size, int Ti, int Tj, int Tk) {
-    int nii = size / Ti;
-    int njj = size / Tj;
-    int nkk = size / Tk;
-
-    for (int ii = 0; ii < nii; ii += Ti) {
-        for (int kk = 0; kk < nkk; kk += Tk) {
-            for (int jj = 0; jj < njj; jj += Tj) {
-                for (int i = ii; i < ii+Ti; i ++) {
+    // int nii = (size - 1) / Ti + 1;
+    // int njj = (size - 1) / Ti + 1;
+    // int nkk = (size - 1) / Ti + 1;
+    for (int ii = 0; ii < size; ii += Ti) {
+        for (int kk = 0; kk < size; kk += Tk) {
+            for (int jj = 0; jj < size; jj += Tj) {
+                int iend = MIN(size, ii+Ti);
+                for (int i = ii; i < iend; i ++) {
+                    int kend = MIN(size, jj+Tj);
                     for (int k = kk; k < kk+Tk; k ++) {
+                        int jend = MIN(size, jj+Tj);
                         for (int j = jj; j < jj+Tj; j ++) {
                             C[i*size+j] += A[i*size+k] * B[k*size+j];
                         }

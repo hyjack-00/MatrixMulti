@@ -94,7 +94,7 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
 }
 void test_tile() {
     cout << "Tiling test:" << endl;
-    constexpr int loop = 10, size = 1024;
+    constexpr int loop = 5, size = 1024, Tstart = 4, Tend = size/Tstart;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
@@ -103,9 +103,9 @@ void test_tile() {
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
 
     cout << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = 1; Ti <= size; Ti *= 2) {
-        for (int Tj = 1; Tj <= size; Tj *= 2) {
-            for (int Tk = 1; Tk <= size; Tk *= 2) {
+    for (int Ti = Tstart; Ti <= Tend; Ti *= 2) {
+        for (int Tj = Tstart; Tj <= Tend; Tj *= 2) {
+            for (int Tk = Tstart; Tk <= Tend; Tk *= 2) {
                 cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {

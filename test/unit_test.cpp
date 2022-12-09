@@ -34,9 +34,16 @@ string ouput_file = "output/output1.txt";
 #define Now std::chrono::system_clock::now()
 #define Dur(start,end) static_cast<std::chrono::duration<double>>((end)-(start)).count()
 
-struct Rec_tile;  // 用来记录最优分块
+struct Rec_tile {  // 用来记录最优分块
+    int Ti, Tj, Tk;
+    float time;
+    Rec_tile(int i, int j, int k, float t) : Ti(i), Tj(j), Tk(k), time(t) {}
+};
+bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
+    return r1.time < r2.time;
+}
 
-// Random init (Implemented after main())
+// Random init (Implemented just before main())
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
 #define RAND_UB 10000  // [LB, UB)
@@ -47,14 +54,73 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
+void test_cal_correct() {
+    constexpr int loop = 10, size = 1024, Tsize = 64;
+    OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
+    Mat_1D<int> A(size), B(size), C(size), D(size), E(size);
+    rand_mat_1D(A, RAND_SEED1);
+    rand_mat_1D(B, RAND_SEED2);
+
+    memset(E.data, 0, sizeof(int)*size*size);
+    mm_1D_benchmark(A.data, B.data, E.data, size);
+
+    for (int i = 0; i < loop; i ++) {
+        memset(C.data, 0, sizeof(int)*size*size);
+        memset(D.data, 0, sizeof(int)*size*size);
+        mm_1D_tile_2pow(A.data, B.data, C.data, size, Tsize, Tsize, Tsize);
+        mm_1D_benchmark(A.data, B.data, D.data, size);
+        
+        if (C == D) OS << "checked: Correct";
+        if (C == E) OS << ", Consistent";
+
+        OS << endl;
+    }
+}
+
 void test_tile_precise() {
     // ostream &os = ofs;
-    constexpr int loop = 10, size = 2048;
+    constexpr int loop = 3, size = 1024;
+    constexpr int Tstart = 8, Tend = 512, Tstep = 10;
     OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
 
+    priority_queue<Rec_tile> q;
+    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
+
+    cout << "  Ti   Tj   Tk   Time" << endl;
+    for (int Ti = Tstart; Ti <= Tend; Ti += Tstep) {
+        for (int Tj = Tstart; Tj <= Tend; Tj += Tstep) {
+            for (int Tk = Tstart; Tk <= Tend; Tk += Tstep) {
+                cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+                auto start = Now;
+                for (int l = 0; l < loop; l ++) {
+                    memset(C.data, 0, sizeof(int)*size*size);
+                    mm_1D_tile_2pow(A.data, B.data, C.data, size, Ti, Tj, Tk);
+                }
+                auto end = Now;
+                double dur = Dur(start, end);
+                cout << dur;
+                if (dur < q.top().time) {  // 进入前20
+                    q.pop();
+                    q.push(Rec_tile(Ti, Tj, Tk, dur));
+                    cout << " recorded";
+                }
+                cout << endl;
+            }
+        }
+    }
+
+    // 展示前20
+    cout << endl << "========== Speedest 20 ==========" << endl;
+    cout << "  Ti   Tj   Tk   Time" << endl;
+    while (!q.empty()) {
+        Rec_tile r = q.top();
+        q.pop();
+        cout << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
+        cout << r.time << endl;
+    }
 }
 
 void test_tile_reg(double &reg, double &no_reg) {
@@ -84,17 +150,9 @@ void test_tile_reg(double &reg, double &no_reg) {
     cout << "Tile & Reg : " << no_reg << endl;
 }
 
-struct Rec_tile {
-    int Ti, Tj, Tk;
-    float time;
-    Rec_tile(int i, int j, int k, float t) : Ti(i), Tj(j), Tk(k), time(t) {}
-};
-bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
-    return r1.time < r2.time;
-}
 void test_tile() {
     cout << "Tiling test:" << endl;
-    constexpr int loop = 5, size = 1024, Tstart = 4, Tend = size/Tstart;
+    constexpr int loop = 10, size = 4096;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
@@ -103,9 +161,9 @@ void test_tile() {
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
 
     cout << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = Tstart; Ti <= Tend; Ti *= 2) {
-        for (int Tj = Tstart; Tj <= Tend; Tj *= 2) {
-            for (int Tk = Tstart; Tk <= Tend; Tk *= 2) {
+    for (int Ti = 128; Ti <= size; Ti *= 2) {
+        for (int Tj = 256; Tj <= size; Tj *= 2) {
+            for (int Tk = 2; Tk <= 8; Tk *= 2) {
                 cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
@@ -207,6 +265,19 @@ void test_reg_restrict() {
     cout << "register/restrict test finish." << endl;
 }
 
+void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
+    srand(seed);
+    int sz = M.size;
+    for (int i = 0; i < sz; i ++) 
+        for (int j = 0; j < sz; j ++)
+            M.data[i*sz+j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
+    srand(seed);
+    for (int i = 0; i < M.size; i ++)
+        for (int j = 0; j < M.size; j ++)
+            M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
 
 int main() {
     cout << "Test begin." << endl;
@@ -221,21 +292,9 @@ int main() {
         test_tile();
         // test_tile_reg(r, nr);
         // test_tile_precise();
+        // test_cal_correct();
     }
     cout << "Test end." << endl;
     ofs.close();
 }
 
-void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
-    srand(seed);
-    int sz = M.size;
-    for (int i = 0; i < sz; i ++) 
-        for (int j = 0; j < sz; j ++)
-            M.data[i*sz+j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
-}
-void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
-    srand(seed);
-    for (int i = 0; i < M.size; i ++)
-        for (int j = 0; j < M.size; j ++)
-            M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
-}

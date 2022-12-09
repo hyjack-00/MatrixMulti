@@ -29,6 +29,15 @@ struct Mat_1D {
     inline void change(int i, int j, T val) {
         data[i * size + j] = val;
     }
+    bool operator==(const Mat_1D &M) {
+        if (size != M.size) return false;
+        for (int i = 0; i < size*size; i ++) {
+            if (data[i] != M.data[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 template <typename T>

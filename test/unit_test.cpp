@@ -72,7 +72,7 @@ void test_mat_access_speed();
 int main() {
     cout << "Test begin." << endl;
     
-    #if OS==ofs
+    #if FILE_OUTPUT == true
         cout << "Output File: " << ouput_file << endl;
         ofs.open(ouput_file, ios::out);
     #endif
@@ -81,11 +81,11 @@ int main() {
     for (int i = 0; i < 1; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        // test_tile();
+        test_tile();
         // test_tile_reg(r, nr);
         // test_tile_precise();
         // test_cal_correct();
-        test_neon();
+        // test_neon();
     }
     cout << "Test end." << endl;
     ofs.close();
@@ -96,11 +96,17 @@ int main() {
 void test_neon() {
     constexpr int loop = 10, size = 1024;
     OS << "Neon test: Loop-" << loop << ", Size-" << size << endl;
+    #ifdef __ARM_NEON
+        OS << "NEON!!!" << endl;
+    #else
+        OS << "NO NEON ENV..." << endl;
+    #endif
+
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
     for (int i = 0; i < loop; i ++) {
-        mm_1D_int32_vec(A.data, B.data, C.data, size);
+        mm_1D_i32_vec(A.data, B.data, C.data, size);
     }
 }
 
@@ -201,7 +207,7 @@ void test_tile_reg(double &reg, double &no_reg) {
 }
 
 void test_tile() {
-    constexpr int loop = 5, size = 4096;
+    constexpr int loop = 10, size = 1024;
     cout << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
@@ -211,9 +217,9 @@ void test_tile() {
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
     cout << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = 128; Ti <= size; Ti *= 2) {
-        for (int Tj = 256; Tj <= size; Tj *= 2) {
-            for (int Tk = 2; Tk <= 16; Tk *= 2) {
+    for (int Ti = 4; Ti <= size; Ti *= 2) {
+        for (int Tj = 4; Tj <= size; Tj *= 2) {
+            for (int Tk = 4; Tk <= 16; Tk *= 2) {
                 cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {

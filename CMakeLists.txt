@@ -19,8 +19,8 @@ add_executable(MatrixMulti ${SRCS} ${TEST})
 
 add_definitions(-std=c++11)
 add_definitions(-Wall -Wextra)
-add_definitions(-O2)
-
+add_definitions(-O3)
+add_definitions(-funroll-loops)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

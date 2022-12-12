@@ -17,8 +17,8 @@ struct Mat_1D {
     int size;
     T *data;
 
-    Mat_1D(int sz) : size(sz) { 
-        data = new T [sz*sz]; 
+    Mat_1D(int sz) : size(sz) {
+        data = new T [sz*sz];
     }
     ~Mat_1D() { 
         delete[] data; 
@@ -52,6 +52,8 @@ struct Mat_1D {
         return true;
     }
 };
+
+template 
 
 template <typename T>
 struct Mat_2D {

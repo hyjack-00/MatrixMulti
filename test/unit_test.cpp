@@ -59,10 +59,10 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed);
 
 
 // Unit test -----------------------------------------------------------
-void test_neon();
+
+void test_neon_s32();
 
 void test_cal_correct();
-void test_tile_precise();
 void test_tile_reg(double &reg, double &no_reg);
 void test_tile();
 
@@ -83,9 +83,9 @@ int main() {
         // test_reg_restrict();
         test_tile();
         // test_tile_reg(r, nr);
-        // test_tile_precise();
         // test_cal_correct();
-        // test_neon();
+        // test_neon_s32();
+        // test_neon_f32();
     }
     cout << "Test end." << endl;
     ofs.close();
@@ -93,7 +93,9 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
-void test_neon() {
+
+
+void test_neon_s32() {
     constexpr int loop = 10, size = 1024;
     OS << "Neon test: Loop-" << loop << ", Size-" << size << endl;
     #ifdef __ARM_NEON
@@ -105,8 +107,9 @@ void test_neon() {
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
+    memset(C.data, 0, sizeof(int)*size*size);
     for (int i = 0; i < loop; i ++) {
-        mm_1D_i32_vec(A.data, B.data, C.data, size);
+        mm_1D_s32_vec(A.data, B.data, C.data, size);
     }
 }
 
@@ -130,52 +133,6 @@ void test_cal_correct() {
         if (C == E) OS << ", Consistent";
 
         OS << endl;
-    }
-}
-
-void test_tile_precise() {
-    // ostream &os = ofs;
-    constexpr int loop = 3, size = 1024;
-    constexpr int Tstart = 8, Tend = 512, Tstep = 8;
-    OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
-    Mat_1D<int> A(size), B(size), C(size);
-    rand_mat_1D(A, RAND_SEED1);
-    rand_mat_1D(B, RAND_SEED2);
-
-    priority_queue<Rec_tile> q;
-    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
-
-    cout << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = Tstart; Ti <= Tend; Ti += Tstep) {
-        for (int Tj = Tstart; Tj <= Tend; Tj += Tstep) {
-            for (int Tk = Tstart; Tk <= Tend; Tk += Tstep) {
-                cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
-                auto start = Now;
-                for (int l = 0; l < loop; l ++) {
-                    memset(C.data, 0, sizeof(int)*size*size);
-                    mm_1D_tile_2pow(A.data, B.data, C.data, size, Ti, Tj, Tk);
-                }
-                auto end = Now;
-                double dur = Dur(start, end);
-                cout << dur;
-                if (dur < q.top().time) {  // 进入前20
-                    q.pop();
-                    q.push(Rec_tile(Ti, Tj, Tk, dur));
-                    cout << " recorded";
-                }
-                cout << endl;   
-            }
-        }
-    }
-
-    // 展示前20
-    cout << endl << "========== Speedest 20 ==========" << endl;
-    cout << "  Ti   Tj   Tk   Time" << endl;
-    while (!q.empty()) {
-        Rec_tile r = q.top();
-        q.pop();
-        cout << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
-        cout << r.time << endl;
     }
 }
 
@@ -208,7 +165,7 @@ void test_tile_reg(double &reg, double &no_reg) {
 
 void test_tile() {
     constexpr int loop = 10, size = 1024;
-    cout << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
+    OS << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
@@ -216,37 +173,37 @@ void test_tile() {
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
-    cout << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = 4; Ti <= size; Ti *= 2) {
-        for (int Tj = 4; Tj <= size; Tj *= 2) {
-            for (int Tk = 4; Tk <= 16; Tk *= 2) {
-                cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+    OS << "  Ti   Tj   Tk   Time" << endl;
+    for (int Ti = 512; Ti >= 32; Ti /= 2) {
+        for (int Tj = 1024; Tj >= 256; Tj /= 2) {
+            for (int Tk = 8; Tk >= 1; Tk /= 2) {
+                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
-                    memset(C.data, 0, sizeof(int)*size*size);
+                    // memset(C.data, 0, sizeof(int)*size*size);
                     mm_1D_tile_2pow(A.data, B.data, C.data, size, Ti, Tj, Tk);
                 }
                 auto end = Now;
                 double dur = Dur(start, end);
-                cout << dur;
+                OS << dur;
                 if (dur < q.top().time) {  // 进入前20
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, Tk, dur));
-                    cout << " recorded";
+                    OS << " recorded";
                 }
-                cout << endl;
+                OS << endl;
             }
         }
     }
 
     // 展示前20
-    cout << endl << "========== Speedest 20 ==========" << endl;
-    cout << "  Ti   Tj   Tk   Time" << endl;
+    OS << endl << "========== Speedest 20 ==========" << endl;
+    OS << "  Ti   Tj   Tk   Time" << endl;
     while (!q.empty()) {
         Rec_tile r = q.top();
         q.pop();
-        cout << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
-        cout << r.time << endl;
+        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
+        OS << r.time << endl;
     }
 }
 
@@ -324,9 +281,8 @@ void test_reg_restrict() {
 void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
     srand(seed);
     int sz = M.size;
-    for (int i = 0; i < sz; i ++) 
-        for (int j = 0; j < sz; j ++)
-            M.data[i*sz+j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+    for (int i = 0; i < sz*sz; i ++) 
+        M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
 void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
     srand(seed);

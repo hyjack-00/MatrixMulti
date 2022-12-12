@@ -67,10 +67,10 @@ int main() {
     #endif
 
     printf("Neon test:\n");
-    printf("Fp32-kernel_1 paral\n");
+    printf("fp32-kernel_1 paral\n");
     test_parallel(kernel_1, threads_num, LOOP, OP_NUM_K1 * 2 * 4);
 
-    printf("Fp32-kernel_2 single\n");
+    printf("fp32-kernel_1 single\n");
     test_single(kernel_1, LOOP, OP_NUM_K1 * 2 * 4);
 
     return 0;

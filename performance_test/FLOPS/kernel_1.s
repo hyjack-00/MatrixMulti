@@ -1,6 +1,6 @@
-.global kernel_neon_fp32
+.global kernel_1
 
-kernel_neon_fp32:
+kernel_1:
     eor    v0.16b, v0.16b, v0.16b 
     eor    v1.16b, v1.16b, v1.16b 
     eor    v2.16b, v2.16b, v2.16b

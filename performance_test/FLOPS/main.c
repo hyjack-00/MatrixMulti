@@ -8,10 +8,10 @@
 typedef void (*kernel_func_t)(int); 
 
 void kernel_1(int);  // asm implementation
-#define OP_NUM_K1 (32)
+#define OP_PER_LOOP_K1 (32 * 2 * 4)
 
 void kernel_2(int);
-#define OP_NUM_K2 (80)
+#define OP_PER_LOOP_K2 (10 * 2 * 4)
 
 static double get_time(struct timespec *start, struct timespec *end) {
     return end->tv_sec - start->tv_sec + (end->tv_nsec - start->tv_nsec) * 1e-9;
@@ -68,10 +68,10 @@ int main() {
 
     printf("Neon test:\n");
     printf("fp32-kernel_1 paral\n");
-    test_parallel(kernel_1, threads_num, LOOP, OP_NUM_K1 * 2 * 4);
+    test_parallel(kernel_2, threads_num, LOOP, OP_NUM_K1 * 2 * 4);
 
     printf("fp32-kernel_1 single\n");
-    test_single(kernel_1, LOOP, OP_NUM_K1 * 2 * 4);
+    test_single(kernel_2, LOOP, OP_NUM_K1 * 2 * 4);
 
     return 0;
 }

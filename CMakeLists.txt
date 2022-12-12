@@ -16,7 +16,6 @@ set(TEST
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 add_executable(MatrixMulti ${SRCS} ${TEST})
 
-
 add_definitions(-std=c++11)
 add_definitions(-Wall -Wextra)
 add_definitions(-O3)

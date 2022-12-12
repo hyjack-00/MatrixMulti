@@ -42,7 +42,7 @@ static void test_parallel(kernel_func_t kernel_func,
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
     time_used = get_time(&start, &end);
-    if (isFloat)
+    if (isFloat == 1)
         printf("perf: %.6lf GFlOPS\r\n", 
             (double)threads_num * loop * ops_per_loop * 1e-9 / time_used);
     else
@@ -64,7 +64,7 @@ static void test_single(kernel_func_t kernel_func,
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
     time_used = get_time(&start, &end);
-    if (isFloat)
+    if (isFloat == 1)
         printf("perf: %.6lf GFlOPS\r\n", 
             (double)loop * ops_per_loop * 1e-9 / time_used);
     else
@@ -80,7 +80,7 @@ int main() {
         return 0;
     #endif
 
-    printf("Neon test:\n");
+    printf("NEON test:\n");
     
     printf("fp32-kernel_1 paral\n");
     test_parallel(kernel_1, threads_num, LOOP, OP_PER_LOOP_K1, 1);

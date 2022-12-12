@@ -1,3 +1,6 @@
+.text
+.align 5
+
 .global kernel_1
 
 kernel_1:

@@ -15,12 +15,18 @@
 
 using namespace std;
 
+#define FILE_OUTPUT false
+
 #define LOOP_S  10
 #define LOOP_M  50
 #define LOOP_L  100
 
 // File IO
-#define OS cout  // 快速切换输出源
+#if FILE_OUTPUT == true
+    #define OS ofs
+#else
+    #define OS cout
+#endif 
 ofstream ofs;
 string ouput_file = "output/output1.txt";
 
@@ -43,7 +49,7 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
     return r1.time < r2.time;
 }
 
-// Random init (Implemented just before main())
+// Random init
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
 #define RAND_UB 10000  // [LB, UB)
@@ -53,6 +59,50 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed);
 
 
 // Unit test -----------------------------------------------------------
+void test_neon();
+
+void test_cal_correct();
+void test_tile_precise();
+void test_tile_reg(double &reg, double &no_reg);
+void test_tile();
+
+void test_reg_restrict();
+void test_mat_access_speed();
+
+int main() {
+    cout << "Test begin." << endl;
+    
+    #if OS==ofs
+        cout << "Output File: " << ouput_file << endl;
+        ofs.open(ouput_file, ios::out);
+    #endif
+    
+    // double r = 0, nr = 0;
+    for (int i = 0; i < 1; i ++) {
+        // test_mat_access_speed();
+        // test_reg_restrict();
+        // test_tile();
+        // test_tile_reg(r, nr);
+        // test_tile_precise();
+        // test_cal_correct();
+        test_neon();
+    }
+    cout << "Test end." << endl;
+    ofs.close();
+}
+
+// Test implementation -----------------------------------------------------------
+
+void test_neon() {
+    constexpr int loop = 10, size = 1024;
+    OS << "Neon test: Loop-" << loop << ", Size-" << size << endl;
+    Mat_1D<int> A(size), B(size), C(size);
+    rand_mat_1D(A, RAND_SEED1);
+    rand_mat_1D(B, RAND_SEED2);
+    for (int i = 0; i < loop; i ++) {
+        mm_1D_int32_vec(A.data, B.data, C.data, size);
+    }
+}
 
 void test_cal_correct() {
     constexpr int loop = 10, size = 1024, Tsize = 64;
@@ -80,7 +130,7 @@ void test_cal_correct() {
 void test_tile_precise() {
     // ostream &os = ofs;
     constexpr int loop = 3, size = 1024;
-    constexpr int Tstart = 8, Tend = 512, Tstep = 10;
+    constexpr int Tstart = 8, Tend = 512, Tstep = 8;
     OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
@@ -107,7 +157,7 @@ void test_tile_precise() {
                     q.push(Rec_tile(Ti, Tj, Tk, dur));
                     cout << " recorded";
                 }
-                cout << endl;
+                cout << endl;   
             }
         }
     }
@@ -151,19 +201,19 @@ void test_tile_reg(double &reg, double &no_reg) {
 }
 
 void test_tile() {
-    cout << "Tiling test:" << endl;
-    constexpr int loop = 10, size = 4096;
+    constexpr int loop = 5, size = 4096;
+    cout << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D(A, RAND_SEED1);
     rand_mat_1D(B, RAND_SEED2);
 
     priority_queue<Rec_tile> q;
-    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 100));  // 选取时间最少的前20
+    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
     cout << "  Ti   Tj   Tk   Time" << endl;
     for (int Ti = 128; Ti <= size; Ti *= 2) {
         for (int Tj = 256; Tj <= size; Tj *= 2) {
-            for (int Tk = 2; Tk <= 8; Tk *= 2) {
+            for (int Tk = 2; Tk <= 16; Tk *= 2) {
                 cout << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
@@ -279,22 +329,5 @@ void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
             M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
 
-int main() {
-    cout << "Test begin." << endl;
-    
-    cout << "Output File: " << ouput_file << endl;
-    ofs.open(ouput_file, ios::out);
-    
-    // double r = 0, nr = 0;
-    for (int i = 0; i < 10; i ++) {
-        // test_mat_access_speed();
-        // test_reg_restrict();
-        test_tile();
-        // test_tile_reg(r, nr);
-        // test_tile_precise();
-        // test_cal_correct();
-    }
-    cout << "Test end." << endl;
-    ofs.close();
-}
+
 

@@ -29,13 +29,26 @@ struct Mat_1D {
     inline void change(int i, int j, T val) {
         data[i * size + j] = val;
     }
-    bool operator==(const Mat_1D &M) {
+
+    // Check answer
+    bool operator==(const Mat_1D<int> &M) {
         if (size != M.size) return false;
-        for (int i = 0; i < size*size; i ++) {
-            if (data[i] != M.data[i]) {
-                return false;
-            }
-        }
+        for (int i = 0; i < size*size; i ++)
+            if (data[i] != M.data[i]) return false;
+        return true;
+    }
+    bool operator==(const Mat_1D<float> &M) {
+        constexpr float ERR = 1e-6;
+        if (size != M.size) return false;
+        for (int i = 0; i < size*size; i ++)
+            if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR) return false;
+        return true;
+    }
+    bool operator==(const Mat_1D<double> &M) {
+        constexpr float ERR = 1e-9;
+        if (size != M.size) return false;
+        for (int i = 0; i < size*size; i ++) 
+            if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR) return false;
         return true;
     }
 };

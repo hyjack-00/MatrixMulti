@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <omp.h>
 
-#define WARMUP_LOOP (1e6)
+#define WARMUP_LOOP (1e9)
 #define LOOP (1e9)
 
 typedef void (*kernel_func_t)(int); 

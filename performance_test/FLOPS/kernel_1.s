@@ -21,31 +21,6 @@ kernel_1:
     fmla v10.4s, v10.4s, v10.4s
     fmla v11.4s, v11.4s, v11.4s
 
-    fmla v12.4s, v12.4s, v12.4s
-    fmla v13.4s, v13.4s, v13.4s
-    fmla v14.4s, v14.4s, v14.4s
-    fmla v15.4s, v15.4s, v15.4s
-
-    fmla v16.4s, v16.4s, v16.4s
-    fmla v17.4s, v17.4s, v17.4s
-    fmla v18.4s, v18.4s, v18.4s
-    fmla v19.4s, v19.4s, v19.4s
-
-    fmla v20.4s, v20.4s, v20.4s
-    fmla v21.4s, v21.4s, v21.4s
-    fmla v22.4s, v22.4s, v22.4s
-    fmla v23.4s, v23.4s, v23.4s
-
-    fmla v24.4s, v24.4s, v24.4s
-    fmla v25.4s, v25.4s, v25.4s
-    fmla v26.4s, v26.4s, v26.4s
-    fmla v27.4s, v27.4s, v27.4s
-
-    fmla v28.4s, v28.4s, v28.4s
-    fmla v29.4s, v29.4s, v29.4s
-    fmla v30.4s, v30.4s, v30.4s
-    fmla v31.4s, v31.4s, v31.4s
-
     subs x0, x0, #1
     bne .loop1
     ret

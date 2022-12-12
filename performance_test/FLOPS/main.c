@@ -9,10 +9,10 @@ typedef void (*kernel_func_t)(int);
 #define KERNEL kernel_2
 
 void kernel_1(int);  // asm implementation
-#define OP_PER_LOOP_K1 (32 * 2 * 4)
+#define OP_PER_LOOP_K1 (12 * 2 * 4)
 
 void kernel_2(int);
-#define OP_PER_LOOP_K2 (10 * 2 * 4)
+#define OP_PER_LOOP_K2 (32 * 2 * 4)
 
 static double get_time(struct timespec *start, struct timespec *end) {
     return end->tv_sec - start->tv_sec + (end->tv_nsec - start->tv_nsec) * 1e-9;

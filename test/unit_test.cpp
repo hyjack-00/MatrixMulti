@@ -54,9 +54,9 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
 #define RAND_SEED2 20221123
 #define RAND_UB 10000  // [LB, UB)
 #define RAND_LB 0
-void rand_mat_1D(Mat_1D<int> &M, unsigned int seed);
-void rand_mat_2C(Mat_2C<int> &M, unsigned int seed);
-
+void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed);
+void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed);
+void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
@@ -81,10 +81,10 @@ int main() {
     for (int i = 0; i < 1; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
-        test_tile();
+        // test_tile();
         // test_tile_reg(r, nr);
         // test_cal_correct();
-        // test_neon_s32();
+        test_neon_s32();
         // test_neon_f32();
     }
     cout << "Test end." << endl;
@@ -96,20 +96,21 @@ int main() {
 
 
 void test_neon_s32() {
-    constexpr int loop = 10, size = 1024;
-    OS << "Neon test: Loop-" << loop << ", Size-" << size << endl;
+    constexpr int loop = 10, m = 1024, p = 512, n = 512;
+    OS << "Neon test: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     #ifdef __ARM_NEON
         OS << "NEON!!!" << endl;
     #else
         OS << "NO NEON ENV..." << endl;
     #endif
 
-    Mat_1D<int> A(size), B(size), C(size);
-    rand_mat_1D(A, RAND_SEED1);
-    rand_mat_1D(B, RAND_SEED2);
-    memset(C.data, 0, sizeof(int)*size*size);
+    Mat_1G<int> A(m, p), B(p, n), C(m, n);
+    rand_mat_1G_s32(A, RAND_SEED1);
+    rand_mat_1G_s32(B, RAND_SEED2);
+    memset(C.data, 0, sizeof(int)*m*n);
     for (int i = 0; i < loop; i ++) {
-        mm_1D_s32_vec(A.data, B.data, C.data, size);
+        mm_1G_benchmark(A.data, B.data, C.data, m, p, n);
     }
 }
 
@@ -117,8 +118,8 @@ void test_cal_correct() {
     constexpr int loop = 10, size = 1024, Tsize = 64;
     OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size), D(size), E(size);
-    rand_mat_1D(A, RAND_SEED1);
-    rand_mat_1D(B, RAND_SEED2);
+    rand_mat_1D_s32(A, RAND_SEED1);
+    rand_mat_1D_s32(B, RAND_SEED2);
 
     memset(E.data, 0, sizeof(int)*size*size);
     mm_1D_benchmark(A.data, B.data, E.data, size);
@@ -141,8 +142,8 @@ void test_tile_reg(double &reg, double &no_reg) {
     cout << "Tiling & register test:" << endl;
     constexpr int loop = 1000, size = 4096, Tsize = 64;
     Mat_1D<int> A(size), B(size), C(size);
-    rand_mat_1D(A, RAND_SEED1);
-    rand_mat_1D(B, RAND_SEED2);
+    rand_mat_1D_s32(A, RAND_SEED1);
+    rand_mat_1D_s32(B, RAND_SEED2);
 
     auto start = Now;
     for (int i = 0; i < loop; i ++) {
@@ -167,8 +168,8 @@ void test_tile() {
     constexpr int loop = 10, size = 1024;
     OS << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
-    rand_mat_1D(A, RAND_SEED1);
-    rand_mat_1D(B, RAND_SEED2);
+    rand_mat_1D_s32(A, RAND_SEED1);
+    rand_mat_1D_s32(B, RAND_SEED2);
 
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
@@ -195,6 +196,10 @@ void test_tile() {
             }
         }
     }
+    auto start = Now;
+    mm_1D_benchmark(A.data, B.data, C.data, size);
+    auto end = Now;
+    OS << "Benchmark: " << Dur(start, end) << endl;
 
     // 展示前20
     OS << endl << "========== Speedest 20 ==========" << endl;
@@ -256,8 +261,8 @@ void test_reg_restrict() {
     cout << "register/restrict test:" << endl;
 
     Mat_1D<int> A1(size), B1(size), C1(size);
-    rand_mat_1D(A1, RAND_SEED1);
-    rand_mat_1D(B1, RAND_SEED2);
+    rand_mat_1D_s32(A1, RAND_SEED1);
+    rand_mat_1D_s32(B1, RAND_SEED2);
     auto start = Now;
     for (int i = 0; i < loop; i ++) {
         // mm_1D_benchmark_reg(A1.data, B1.data, C1.data, size);
@@ -266,8 +271,8 @@ void test_reg_restrict() {
     cout << "Mat_1D: " << Dur(start, end) << endl;
 
     Mat_2C<int> A2(size), B2(size), C2(size);
-    rand_mat_2C(A2, RAND_SEED1);
-    rand_mat_2C(B2, RAND_SEED2);
+    rand_mat_2C_s32(A2, RAND_SEED1);
+    rand_mat_2C_s32(B2, RAND_SEED2);
     start = Now;
     for (int i = 0; i < loop; i ++) {
         mm_2C_benchmark(A2.data, B2.data, C2.data, size);
@@ -278,17 +283,23 @@ void test_reg_restrict() {
     cout << "register/restrict test finish." << endl;
 }
 
-void rand_mat_1D(Mat_1D<int> &M, unsigned int seed) {
+void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed) {
     srand(seed);
     int sz = M.size;
     for (int i = 0; i < sz*sz; i ++) 
         M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
-void rand_mat_2C(Mat_2C<int> &M, unsigned int seed) {
+void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed) {
     srand(seed);
     for (int i = 0; i < M.size; i ++)
         for (int j = 0; j < M.size; j ++)
             M.data[i][j] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed) {
+    srand(seed);
+    int sz = M.width * M.height;
+    for (int i = 0; i < sz*sz; i ++) 
+        M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
 
 

@@ -1,9 +1,9 @@
 .text
 .align 5
 
-.global TEST
+.global kernel_2
 
-TEST:
+kernel_2:
 
 .loop2:
     vmla.f32 q0, q0, q0

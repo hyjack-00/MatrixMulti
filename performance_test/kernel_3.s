@@ -6,45 +6,45 @@
 kernel_3:
     
 .loop1:
-    fmla v0.2s, v0.2s, v0.2s
-    fmla v1.2s, v1.2s, v1.2s
-    fmla v2.2s, v2.2s, v2.2s
-    fmla v3.2s, v3.2s, v3.2s
+    fmla v0.2d, v0.2d, v0.2d
+    fmla v1.2d, v1.2d, v1.2d
+    fmla v2.2d, v2.2d, v2.2d
+    fmla v3.2d, v3.2d, v3.2d
 
-    fmla v4.2s, v4.2s, v4.2s
-    fmla v5.2s, v5.2s, v5.2s
-    fmla v6.2s, v6.2s, v6.2s
-    fmla v7.2s, v7.2s, v7.2s
+    fmla v4.2d, v4.2d, v4.2d
+    fmla v5.2d, v5.2d, v5.2d
+    fmla v6.2d, v6.2d, v6.2d
+    fmla v7.2d, v7.2d, v7.2d
 
-    fmla v8.2s, v8.2s, v8.2s
-    fmla v9.2s, v9.2s, v9.2s
-    fmla v10.2s, v10.2s, v10.2s
-    fmla v11.2s, v11.2s, v11.2s
+    fmla v8.2d, v8.2d, v8.2d
+    fmla v9.2d, v9.2d, v9.2d
+    fmla v10.2d, v10.2d, v10.2d
+    fmla v11.2d, v11.2d, v11.2d
 
-    fmla v12.2s, v12.2s, v12.2s
-    fmla v13.2s, v13.2s, v13.2s
-    fmla v14.2s, v14.2s, v14.2s
-    fmla v15.2s, v15.2s, v15.2s
+    fmla v12.2d, v12.2d, v12.2d
+    fmla v13.2d, v13.2d, v13.2d
+    fmla v14.2d, v14.2d, v14.2d
+    fmla v15.2d, v15.2d, v15.2d
 
-    fmla v16.2s, v16.2s, v16.2s
-    fmla v17.2s, v17.2s, v17.2s
-    fmla v18.2s, v18.2s, v18.2s
-    fmla v19.2s, v19.2s, v19.2s
+    fmla v16.2d, v16.2d, v16.2d
+    fmla v17.2d, v17.2d, v17.2d
+    fmla v18.2d, v18.2d, v18.2d
+    fmla v19.2d, v19.2d, v19.2d
 
-    fmla v20.2s, v20.2s, v20.2s
-    fmla v21.2s, v21.2s, v21.2s
-    fmla v22.2s, v22.2s, v22.2s
-    fmla v23.2s, v23.2s, v23.2s
+    fmla v20.2d, v20.2d, v20.2d
+    fmla v21.2d, v21.2d, v21.2d
+    fmla v22.2d, v22.2d, v22.2d
+    fmla v23.2d, v23.2d, v23.2d
 
-    fmla v24.2s, v24.2s, v24.2s
-    fmla v25.2s, v25.2s, v25.2s
-    fmla v26.2s, v26.2s, v26.2s
-    fmla v27.2s, v27.2s, v27.2s
+    fmla v24.2d, v24.2d, v24.2d
+    fmla v25.2d, v25.2d, v25.2d
+    fmla v26.2d, v26.2d, v26.2d
+    fmla v27.2d, v27.2d, v27.2d
 
-    fmla v28.2s, v28.2s, v28.2s
-    fmla v29.2s, v29.2s, v29.2s
-    fmla v30.2s, v30.2s, v30.2s
-    fmla v31.2s, v31.2s, v31.2s
+    fmla v28.2d, v28.2d, v28.2d
+    fmla v29.2d, v29.2d, v29.2d
+    fmla v30.2d, v30.2d, v30.2d
+    fmla v31.2d, v31.2d, v31.2d
 
     subs x0, x0, #1
     bne .loop1

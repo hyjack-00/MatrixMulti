@@ -46,7 +46,7 @@ static void test_parallel(kernel_func_t kernel_func,
         printf("perf: %.6lf GFlOPS\r\n", 
             (double)threads_num * loop * ops_per_loop * 1e-9 / time_used);
     else
-        printf("perf: %.6lf DMIPS\r\n",
+        printf("perf: %.6lf MIPS\r\n",
             (double)threads_num * loop * ops_per_loop * 1e-6 / time_used);
 }
 
@@ -68,7 +68,7 @@ static void test_single(kernel_func_t kernel_func,
         printf("perf: %.6lf GFlOPS\r\n", 
             (double)loop * ops_per_loop * 1e-9 / time_used);
     else
-        printf("perf: %.6lf DMIPS\r\n",
+        printf("perf: %.6lf MIPS\r\n",
             (double)loop * ops_per_loop * 1e-6 / time_used);
 }
 
@@ -82,24 +82,24 @@ int main() {
 
     printf("NEON test:\n");
     
-    printf("fp32-kernel_1 paral\n");
+    printf("\nfp32-kernel_1 paral\n");
     test_parallel(kernel_1, 1, threads_num, LOOP, OP_PER_LOOP_K1);
-    printf("fp32-kernel_1 single\n\n");
+    printf("fp32-kernel_1 single\n");
     test_single(kernel_1, 1, LOOP, OP_PER_LOOP_K1);
 
-    printf("fp32-kernel_2 paral\n");
+    printf("\nfp32-kernel_2 paral\n");
     test_parallel(kernel_2, 1, threads_num, LOOP, OP_PER_LOOP_K2);
-    printf("fp32-kernel_2 single\n\n");
+    printf("fp32-kernel_2 single\n");
     test_single(kernel_2, 1, LOOP, OP_PER_LOOP_K2);
 
-    printf("fp64-kernel_3 paral\n");
+    printf("\nfp64-kernel_3 paral\n");
     test_parallel(kernel_3, 1, threads_num, LOOP, OP_PER_LOOP_K3);
     printf("fp64-kernel_3 single\n");
     test_single(kernel_3, 1, LOOP, OP_PER_LOOP_K3);
 
-    printf("int32-kernel_4 paral\n");
+    printf("\nint32-kernel_4 paral\n");
     test_parallel(kernel_4, 0, threads_num, LOOP, OP_PER_LOOP_K4);
-    printf("int32-kernel_4 single\n\n");
+    printf("int32-kernel_4 single\n");
     test_single(kernel_4, 0, LOOP, OP_PER_LOOP_K4);
 
     return 0;

@@ -1,9 +1,9 @@
 .text
 .align 5
 
-.global kernel_1
+.global kernel_2
 
-kernel_1:
+kernel_2:
     eor    v0.16b, v0.16b, v0.16b 
     eor    v1.16b, v1.16b, v1.16b 
     eor    v2.16b, v2.16b, v2.16b

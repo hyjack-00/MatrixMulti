@@ -70,9 +70,9 @@ int main() {
     printf("Neon test:\n");
     
     printf("fp32-kernel_1 paral\n");
-    test_parallel(kernel_1, threads_num, LOOP, OP_PER_LOOP_K1);
+    test_parallel(kernel_2, threads_num, LOOP, OP_PER_LOOP_K1);
     printf("fp32-kernel_1 single\n");
-    test_single(kernel_1, LOOP, OP_PER_LOOP_K1);
+    test_single(kernel_2, LOOP, OP_PER_LOOP_K1);
 
     printf("fp32-kernel_2 paral\n");
     test_parallel(kernel_2, threads_num, LOOP, OP_PER_LOOP_K2);

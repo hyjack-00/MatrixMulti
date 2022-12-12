@@ -4,7 +4,7 @@
 # C_FLAGS = -Kopenmp
 # LD_FLAGS = -Kopenmp
 CC = gcc
-C_FLAGS = -fopenmp -D__NEON__
+C_FLAGS = -fopenmp
 LD_FLAGS = -fopenmp
 
 OBJ += kernel_1.o

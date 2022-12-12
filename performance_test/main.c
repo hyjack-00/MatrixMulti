@@ -22,7 +22,7 @@ static double get_time(struct timespec *start, struct timespec *end) {
 }
 
 static void test_parallel(kernel_func_t kernel_func,
-                             const bool isFloat,
+                              const int isFloat,
                               const int threads_num,
                               const int loop,
                               const int ops_per_loop) {
@@ -51,7 +51,7 @@ static void test_parallel(kernel_func_t kernel_func,
 }
 
 static void test_single(kernel_func_t kernel_func, 
-                           const bool isFloat,
+                            const int isFloat,
                             const int loop,
                             const int ops_per_loop) {
     struct timespec start, end;

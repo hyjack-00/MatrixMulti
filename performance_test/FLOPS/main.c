@@ -6,6 +6,7 @@
 #define LOOP (1e9)
 
 typedef void (*kernel_func_t)(int); 
+#define KERNEL kernel_2
 
 void kernel_1(int);  // asm implementation
 #define OP_PER_LOOP_K1 (32 * 2 * 4)
@@ -67,11 +68,16 @@ int main() {
     #endif
 
     printf("Neon test:\n");
+    
     printf("fp32-kernel_1 paral\n");
-    test_parallel(kernel_2, threads_num, LOOP, OP_NUM_K1 * 2 * 4);
-
+    test_parallel(kernel_1, threads_num, LOOP, OP_PER_LOOP_K1);
     printf("fp32-kernel_1 single\n");
-    test_single(kernel_2, LOOP, OP_NUM_K1 * 2 * 4);
+    test_single(kernel_1, LOOP, OP_PER_LOOP_K1);
+
+    printf("fp32-kernel_2 paral\n");
+    test_parallel(kernel_2, threads_num, LOOP, OP_PER_LOOP_K2);
+    printf("fp32-kernel_2 single\n");
+    test_single(kernel_2, LOOP, OP_PER_LOOP_K2);
 
     return 0;
 }

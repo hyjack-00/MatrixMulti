@@ -134,13 +134,15 @@ void test_neon_f32_tile() {
                     OS << l;
                 }
                 auto end = Now;
-                double dur = Dur(start, end);
-                OS << dur;
-                if (dur < q.top().time) {  // 进入前20
-                    q.pop();
-                    q.push(Rec_tile(Ti, Tj, 0, dur));
-                    OS << " recorded";
-                }
+                
+                OS << Dur(start, end);
+                // double dur = Dur(start, end);
+                // OS << dur;
+                // if (dur < q.top().time) {  // 进入前20
+                //     q.pop();
+                //     q.push(Rec_tile(Ti, Tj, 0, dur));
+                //     OS << " recorded";
+                // }
                 OS << endl;
         }
     }

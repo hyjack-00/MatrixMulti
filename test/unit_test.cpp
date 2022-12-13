@@ -50,7 +50,7 @@ void show_mat_1G(Mat_1G<T> &M) {
     int h = M.height, w = M.width;
     for (int i = 0; i < h; i ++) {
         for (int j = 0; j < w; j ++)
-            OS << setw(6) << M.data[i*w + j] << " ";
+            OS << setw(4) << M.data[i*w + j] << " ";
         OS << endl;
     }
     OS << endl;
@@ -110,7 +110,7 @@ void test_neon_f32_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 4, p = 128, n = 4;
+    constexpr int loop = 100, m = 4, p = 16, n = 4;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);

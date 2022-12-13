@@ -57,7 +57,7 @@ struct Mat_1G<float> {
         if (width != M.width || height != M.height) 
             return false;
         for (int i = 0; i < width * height; i++)
-            if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR)
+            if (data[i] - M.data[i] > ERR || M.data[i] - data[i] > ERR)
                 return false;
         return true;
     }
@@ -77,7 +77,7 @@ struct Mat_1G<double> {
         if (width != M.width || height != M.height) 
             return false;
         for (int i = 0; i < width * height; i++)
-            if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR)
+            if (data[i] - M.data[i] > ERR || M.data[i] - data[i] > ERR)
                 return false;
         return true;
     }

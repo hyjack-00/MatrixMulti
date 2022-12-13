@@ -241,9 +241,9 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
             cout << "  " << jj << endl;
             for (int kk = 0; kk < p; kk += Tk) {
                 int kend = MIN(p, kk+Tk);
-                cout << "     " << kk << endl;
+                cout << "    " << kk << endl;
         for (int i = ii; i < iend; i += 4) {
-            cout << "      i " << i << endl;
+            cout << "    i " << i << endl;
             for (int j = jj; j < jend; j += 4) {
                 cout << "        j " << j << endl;
                 C0 = vmovq_n_f32(0);

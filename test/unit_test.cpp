@@ -47,7 +47,7 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
 // Random init
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
-#define RAND_UB 10000  // [LB, UB)
+#define RAND_UB 1000  // [LB, UB)
 #define RAND_LB 0
 void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed);
 void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed);
@@ -80,8 +80,8 @@ int main() {
         // test_tile();
         // test_tile_reg(r, nr);
         // test_cal_correct();
-        test_neon_s32();
-        // test_neon_f32();
+        // test_neon_s32();
+        test_neon_f32();
     }
     cout << "Test end." << endl;
 
@@ -92,12 +92,22 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
+void test_neon_f32_tile() {
+
+}
+
 void test_neon_f32() {
-    constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
+    constexpr int loop = 100, m = 1024, p = 512, n = 512;
     OS << "Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);
+    rand_mat_1G_f32(A, RAND_SEED1);
+    rand_mat_1G_f32(B, RAND_SEED2);
 
+    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, m, n, p);
+    if (C == Ans) OS << "Correct" << endl;
+    else          OS << "Wrong!!" << endl;
 }
 
 void test_neon_s32() {
@@ -331,10 +341,13 @@ void rand_mat_1G_f32(Mat_1G<float> &M, unsigned int seed) {
     srand(seed);
     int sz = M.width * M.height;
     for (int i = 0; i < sz*sz; i ++) 
-        M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+        M.data[i] = ((float)rand() / ((float)RAND_MAX / (RAND_UB - RAND_LB))) + RAND_LB;
 }
 void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed) {
-
+    srand(seed);
+    int sz = M.width * M.height;
+    for (int i = 0; i < sz*sz; i ++) 
+        M.data[i] = ((double)rand() / ((double)RAND_MAX / (RAND_UB - RAND_LB))) + RAND_LB;
 }
 
 

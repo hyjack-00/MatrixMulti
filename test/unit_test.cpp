@@ -125,6 +125,7 @@ void test_neon_f32_tile() {
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, Ti, Tj, Tk);
+                    OS << l;
                 }
                 auto end = Now;
                 double dur = Dur(start, end);

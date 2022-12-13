@@ -107,7 +107,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 10, m = 8, p = 8, n = 8;
+    constexpr int loop = 10, m = 64, p = 64, n = 1024;
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, m);
@@ -128,6 +128,7 @@ void test_neon_f32_tile() {
     for (int Ti = 8; Ti <= 32; Ti += 8) {
         for (int Tj = 16; Tj <= 256; Tj += 16) {
                 OS << setw(4) << Ti << " " << setw(4) << Tj << "   ";
+
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);

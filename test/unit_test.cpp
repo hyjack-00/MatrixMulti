@@ -106,7 +106,7 @@ void test_neon_s32() {
     OS << endl;
 
     auto start = Now;
-    for (int i = 0; i < 1; i ++) {
+    for (int i = 0; i < loop; i ++) {
         mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
     }
     auto end = Now;

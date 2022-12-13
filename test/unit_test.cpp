@@ -109,7 +109,7 @@ void test_neon_f32_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 16, p = 8, n = 8;
+    constexpr int loop = 100, m = 1024, p = 512, n = 4;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);

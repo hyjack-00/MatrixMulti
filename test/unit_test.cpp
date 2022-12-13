@@ -110,9 +110,14 @@ void test_neon_f32_tile() {
     constexpr int loop = 10, m = 1024, p = 1024, n = 1024;
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
-    Mat_1G<float> A(m, p), B(p, n), C(m, n);
+    Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, m);
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
+
+    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, Ti, Tj, Tk);
+    mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
+    if (C == D) 
+        OS << "Correct" << endl;
 
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20

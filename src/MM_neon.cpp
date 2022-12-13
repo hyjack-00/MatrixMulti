@@ -296,6 +296,7 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
 
 
 #else
+// Not NEON env
 
 #define MM mm_1G_benchmark(A, B, C, m, p, n)
 void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C, int32_t m, int32_t p, int32_t n) { MM; }

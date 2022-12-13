@@ -118,7 +118,7 @@ void test_neon_f32_tile() {
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
     OS << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = 4; Ti <= 32; Ti += 4) {
+    for (int Ti = 8; Ti <= 32; Ti += 8) {
         for (int Tj = 16; Tj <= 256; Tj += 16) {
             for (int Tk = 16; Tk <= 256; Tk += 16) {
                 OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";

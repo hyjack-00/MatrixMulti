@@ -12,7 +12,7 @@ kernel_1:
     fmla v3.4s, v3.4s, v3.4s
 
     fmla v4.4s, v4.4s, v4.4s
-    ;fmla v5.4s, v5.4s, v5.4s
+    fmla v5.4s, v5.4s, v5.4s
     ;fmla v6.4s, v6.4s, v6.4s
     ;fmla v7.4s, v7.4s, v7.4s
 

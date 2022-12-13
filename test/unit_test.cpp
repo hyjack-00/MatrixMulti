@@ -94,8 +94,8 @@ int main() {
         // test_tile_reg(r, nr);
         // test_cal_correct();
         // test_neon_s32();
-        // test_neon_f32();
-        test_neon_f32_tile();
+        test_neon_f32();
+        // test_neon_f32_tile();
     }
     cout << "Test end." << endl;
 
@@ -162,7 +162,7 @@ void test_neon_f32() {
 
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     // show_mat_1G(Ans);
-    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n); //, m, n, p);
+    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, m, n, p);
     // show_mat_1G(C);
 
     if (C == Ans) OS << "Correct" << endl;

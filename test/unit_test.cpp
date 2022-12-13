@@ -111,6 +111,20 @@ void test_neon_s32() {
     }
     auto end = Now;
     OS << Dur(start, end) << endl;
+    
+    start = Now;
+    for (int i = 0; i < loop; i ++) {
+        mm_1G_s32_vec_ptr(A.data, B.data, Vec.data, m, p, n);
+    }
+    end = Now;
+    OS << Dur(start, end) << endl;
+    
+    start = Now;
+    for (int i = 0; i < loop; i ++) {
+        mm_1G_benchmark(A.data, B.data, Vec.data, m, p, n);
+    }
+    end = Now;
+    OS << Dur(start, end) << endl;
 }
 
 void test_cal_correct() {

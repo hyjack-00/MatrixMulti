@@ -50,7 +50,7 @@ void show_mat_1G(Mat_1G<T> &M) {
     int h = M.height, w = M.width;
     for (int i = 0; i < h; i ++) {
         for (int j = 0; j < w; j ++)
-            OS << fixed << setprecision(3) << M.data[i*w + j] << " ";
+            OS << fixed << setprecision(2) << M.data[i*w + j] << " ";
         OS << endl;
     }
     OS << endl;

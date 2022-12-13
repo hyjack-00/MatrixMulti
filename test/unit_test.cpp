@@ -81,7 +81,10 @@ int main() {
         // test_neon_f32();
     }
     cout << "Test end." << endl;
-    ofs.close();
+
+    #if FILE_OUTPUT == true
+        ofs.close();
+    #endif
 }
 
 // Test implementation -----------------------------------------------------------
@@ -99,9 +102,9 @@ void test_neon_s32() {
 
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    OS << (Vec == Ans) ? "Correct" : "Wrong" << endl;
+    OS << (Vec == Ans) ? "Correct" : "Wrong!!" << endl;
     mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
-    OS << (VecPtr == Ans) ? "Correct" : "Wrong" << endl;
+    OS << (VecPtr == Ans) ? "Correct" : "Wrong!!" << endl;
 
     auto start = Now;
     for (int i = 0; i < loop; i ++) {

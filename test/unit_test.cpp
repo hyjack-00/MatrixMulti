@@ -127,22 +127,19 @@ void test_neon_f32_tile() {
     OS << "  Ti   Tj   Time" << endl;
     for (int Ti = 8; Ti <= 32; Ti += 8) {
         for (int Tj = 16; Tj <= 256; Tj += 16) {
-                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << "   ";
+                OS << setw(4) << Ti << " " << setw(4) << Tj << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);
-                    OS << l;
                 }
                 auto end = Now;
-                
-                OS << Dur(start, end);
-                // double dur = Dur(start, end);
-                // OS << dur;
-                // if (dur < q.top().time) {  // 进入前20
-                //     q.pop();
-                //     q.push(Rec_tile(Ti, Tj, 0, dur));
-                //     OS << " recorded";
-                // }
+                double dur = Dur(start, end);
+                OS << dur;
+                if (dur < q.top().time) {  // 进入前20
+                    q.pop();
+                    q.push(Rec_tile(Ti, Tj, 0, dur));
+                    OS << " recorded";
+                }
                 OS << endl;
         }
     }

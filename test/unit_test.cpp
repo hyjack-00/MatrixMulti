@@ -100,17 +100,17 @@ void test_neon_s32() {
 
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    (Vec    == Ans) ? OS << "Correct" : OS << "Wrong!! ";
+    (Vec    == Ans) ? OS << "Correct " : OS << "Wrong!! ";
     mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
-    (VecPtr == Ans) ? OS << "Correct" : OS << "Wrong!!";
+    (VecPtr == Ans) ? OS << "Correct " : OS << "Wrong!! ";
     OS << endl;
 
-    // auto start = Now;
-    // for (int i = 0; i < loop; i ++) {
-    //     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    // }
-    // auto end = Now;
-    // OS << Dur(start, end) << endl;
+    auto start = Now;
+    for (int i = 0; i < 1; i ++) {
+        mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
+    }
+    auto end = Now;
+    OS << Dur(start, end) << endl;
 }
 
 void test_cal_correct() {

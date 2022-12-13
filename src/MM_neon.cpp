@@ -1,6 +1,6 @@
 #include "MM_neon.h"
 
-#define __ARM_NEON
+// #define __ARM_NEON
 
 #ifdef __ARM_NEON
 void mm_1D_s32_vec(int32_t *A, int32_t *B, int32_t *C, uint32_t size) {

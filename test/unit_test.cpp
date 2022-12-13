@@ -81,8 +81,8 @@ int main() {
         // test_tile();
         // test_tile_reg(r, nr);
         // test_cal_correct();
-        // test_neon_s32();
-        test_neon_f32();
+        test_neon_s32();
+        // test_neon_f32();
     }
     cout << "Test end." << endl;
 
@@ -98,7 +98,7 @@ void test_neon_f32_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
+    constexpr int loop = 100, m = 1024, p = 512, n = 512;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);
@@ -112,7 +112,7 @@ void test_neon_f32() {
 }
 
 void test_neon_s32() {
-    constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
+    constexpr int loop = 100, m = 1024, p = 512, n = 512;
     OS << "Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
 
@@ -120,20 +120,20 @@ void test_neon_s32() {
     rand_mat_1G_s32(A, RAND_SEED1);
     rand_mat_1G_s32(B, RAND_SEED2);
 
-    // Correcetness check
-    // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
-    // mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    // (Vec    == Ans) ? OS << "Correct " : OS << "Wrong!! ";
-    // mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
-    // (VecPtr == Ans) ? OS << "Correct " : OS << "Wrong!! ";
-    // OS << endl;
+    Correcetness check
+    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
+    (Vec    == Ans) ? OS << "Correct " : OS << "Wrong!! ";
+    mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
+    (VecPtr == Ans) ? OS << "Correct " : OS << "Wrong!! ";
+    OS << endl;
 
-    auto start = Now;
-    for (int i = 0; i < loop; i ++) {
-        mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    }
-    auto end = Now;
-    OS << Dur(start, end) << endl;
+    // auto start = Now;
+    // for (int i = 0; i < loop; i ++) {
+    //     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
+    // }
+    // auto end = Now;
+    // OS << Dur(start, end) << endl;
     
     /// 换 ptr 无区别
     // start = Now;

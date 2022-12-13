@@ -114,26 +114,23 @@ void test_neon_f32_tile() {
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
 
-    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4,4,8);
+    mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, 4,4);
     show_mat_1G(C);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
     show_mat_1G(D);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
     
-    return;
-
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
     OS << "  Ti   Tj   Tk   Time" << endl;
     for (int Ti = 8; Ti <= 32; Ti += 8) {
         for (int Tj = 16; Tj <= 256; Tj += 16) {
-            for (int Tk = 16; Tk <= 256; Tk += 16) {
                 OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
-                    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, Ti, Tj, Tk);
+                    mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);
                     OS << l;
                 }
                 auto end = Now;
@@ -141,21 +138,20 @@ void test_neon_f32_tile() {
                 OS << dur;
                 if (dur < q.top().time) {  // 进入前20
                     q.pop();
-                    q.push(Rec_tile(Ti, Tj, Tk, dur));
+                    q.push(Rec_tile(Ti, Tj, 0, dur));
                     OS << " recorded";
                 }
                 OS << endl;
-            }
         }
     }
 
     // 展示前20
-    OS << endl << "========== Speedest 20 ==========" << endl;
+    OS << endl << "====================== Speedest 20 ======================" << endl;
     OS << "  Ti   Tj   Tk   Time" << endl;
     while (!q.empty()) {
         Rec_tile r = q.top();
         q.pop();
-        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
+        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << "   ";
         OS << r.time << endl;
     }
 }

@@ -2,10 +2,6 @@
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
 
-#ifndef __linux__
-#define __ARM_NEON 1 // For Highlighting
-#endif
-
 #ifdef __ARM_NEON
 
 void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,

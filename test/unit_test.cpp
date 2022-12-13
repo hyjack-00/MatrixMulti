@@ -88,6 +88,8 @@ int main() {
     
     // double r = 0, nr = 0;
     for (int i = 0; i < 10; i ++) {
+        cout << "Test No." << i 
+             << " =============================" << endl;
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile();

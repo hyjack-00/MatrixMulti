@@ -117,6 +117,7 @@ void test_neon_f32_tile() {
     Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, n);
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
+    memset(C.data, 0, sizeof(int)*m*n);
 
     // Correctness
     mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4, 16, 16);

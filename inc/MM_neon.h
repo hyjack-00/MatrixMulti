@@ -25,7 +25,7 @@ void mm_1G_s32_vec_ptr(int32_t *A, int32_t *B, int32_t *C,
 void mm_1G_f32_vec_tile_noK(float32_t *A, float32_t *B, float32_t *C,
                         int32_t m, int32_t p, int32_t n,
                         int32_t Ti, int32_t Tj);
-                        
+
 void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
                         int32_t m, int32_t p, int32_t n,
-                        int32_t Ti, int32_t Tj, int32_t Tk);
+                        int32_t Ti, int32_t Tj, int32_t Tk);  // 注意这个函数里没有初始化

@@ -94,7 +94,8 @@ int main() {
         // test_tile_reg(r, nr);
         // test_cal_correct();
         // test_neon_s32();
-        test_neon_f32();
+        // test_neon_f32();
+        test_neon_f32_tile();
     }
     cout << "Test end." << endl;
 
@@ -106,12 +107,47 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
+    constexpr int loop = 10, m = 1024, p = 1024, n = 1024;
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n);
+    rand_mat_1G_f32(A, RAND_SEED1);
+    rand_mat_1G_f32(B, RAND_SEED2);
 
+    priority_queue<Rec_tile> q;
+    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
+    OS << "  Ti   Tj   Tk   Time" << endl;
+    for (int Ti = 4; Ti <= 32; Ti += 4) {
+        for (int Tj = 16; Tj <= 256; Tj += 16) {
+            for (int Tk = 16; Tk <= 256; Tk += 16) {
+                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+                auto start = Now;
+                for (int l = 0; l < loop; l ++) {
+                    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, Ti, Tj, Tk);
+                }
+                auto end = Now;
+                double dur = Dur(start, end);
+                OS << dur;
+                if (dur < q.top().time) {  // 进入前20
+                    q.pop();
+                    q.push(Rec_tile(Ti, Tj, Tk, dur));
+                    OS << " recorded";
+                }
+                OS << endl;
+            }
+        }
+    }
+
+    // 展示前20
+    OS << endl << "========== Speedest 20 ==========" << endl;
+    OS << "  Ti   Tj   Tk   Time" << endl;
+    while (!q.empty()) {
+        Rec_tile r = q.top();
+        q.pop();
+        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
+        OS << r.time << endl;
+    }
 }
 
 void test_neon_f32() {

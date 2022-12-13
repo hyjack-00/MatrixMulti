@@ -2,7 +2,9 @@
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
 
-#define __ARM_NEON  // For Highlighting
+#ifndef __linux__
+#define __ARM_NEON 1 // For Highlighting
+#endif
 
 #ifdef __ARM_NEON
 

@@ -44,6 +44,17 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
     return r1.time < r2.time;
 }
 
+// Show Matrix
+template <typename T> 
+void show_mat_1G(Mat_1G<T> &M) {
+    int h = M.height, w = M.width;
+    for (int i = 0; i < h; i ++) {
+        for (int j = 0; j < w; j ++)
+            OS << setw(6) << M.data[i*w + j] << " ";
+        OS << endl;
+    }
+}
+
 // Random init
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
@@ -105,8 +116,10 @@ void test_neon_f32() {
     // rand_mat_1G_f32(A, RAND_SEED1);
     // rand_mat_1G_f32(B, RAND_SEED2);
 
+    for (int i = )
+
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
-    // mm_1G_f32_vec(A.data, B.data, C.data, m, p, n); //, m, n, p);
+    mm_1G_f32_vec(A.data, B.data, C.data, m, p, n); //, m, n, p);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong!!" << endl;
 }

@@ -17,7 +17,7 @@ template <typename T>
 struct Mat_1G {
     int width, height;
     T *data;
-    Mat_1G(int w=0, int h=0) {
+    Mat_1G(int h=0, int w=0) {
         data = new T[w * h];
         std::cout << "Unsupported data type." << std::endl;   
     }
@@ -28,7 +28,7 @@ struct Mat_1G<int> {
     int width, height;
     int *data;
 
-    Mat_1G(int w=0, int h=0) : width(w), height(h) {
+    Mat_1G(int h=0, int w=0) : width(w), height(h) {
         data = new int[w * h];
     }
     ~Mat_1G() { delete[] data; }
@@ -47,7 +47,7 @@ struct Mat_1G<float> {
     int width, height;
     float *data;
 
-    Mat_1G(int w=0, int h=0) : width(w), height(h) {
+    Mat_1G(int h=0, int w=0) : width(w), height(h) {
         data = new float[w * h];
     }
     ~Mat_1G() { delete[] data; }
@@ -67,7 +67,7 @@ struct Mat_1G<double> {
     int width, height;
     double *data;
 
-    Mat_1G(int w=0, int h=0) : width(w), height(h) {
+    Mat_1G(int h=0, int w=0) : width(w), height(h) {
         data = new double[w * h];
     }
     ~Mat_1G() { delete[] data; }

@@ -94,8 +94,8 @@ int main() {
         // test_tile_reg(r, nr);
         // test_cal_correct();
         // test_neon_s32();
-        test_neon_f32();
-        // test_neon_f32_tile();
+        // test_neon_f32();
+        test_neon_f32_tile();
     }
     cout << "Test end." << endl;
 

@@ -57,6 +57,7 @@ void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
+void test_neon_f32_tile();
 void test_neon_f32();
 void test_neon_s32();
 void test_cal_correct();
@@ -101,10 +102,10 @@ void test_neon_f32() {
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);
-    rand_mat_1G_f32(A, RAND_SEED1);
-    rand_mat_1G_f32(B, RAND_SEED2);
+    // rand_mat_1G_f32(A, RAND_SEED1);
+    // rand_mat_1G_f32(B, RAND_SEED2);
 
-    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     // mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, m, n, p);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong!!" << endl;

@@ -52,9 +52,12 @@ bool operator<(const Rec_tile &r1, const Rec_tile &r2) {
 void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed);
 void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed);
 void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed);
+void rand_mat_1G_f32(Mat_1G<float> &M, unsigned int seed);
+void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
+void test_neon_f32();
 void test_neon_s32();
 void test_cal_correct();
 void test_tile_reg(double &reg, double &no_reg);
@@ -88,6 +91,14 @@ int main() {
 }
 
 // Test implementation -----------------------------------------------------------
+
+void test_neon_f32() {
+    constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
+    OS << "Neon test: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
+    Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);
+
+}
 
 void test_neon_s32() {
     constexpr int loop = 100, m = 1024, p = 1024, n = 1024;
@@ -315,6 +326,15 @@ void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed) {
     int sz = M.width * M.height;
     for (int i = 0; i < sz*sz; i ++) 
         M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+void rand_mat_1G_f32(Mat_1G<float> &M, unsigned int seed) {
+    srand(seed);
+    int sz = M.width * M.height;
+    for (int i = 0; i < sz*sz; i ++) 
+        M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed) {
+
 }
 
 

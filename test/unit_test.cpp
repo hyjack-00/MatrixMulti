@@ -114,10 +114,8 @@ void test_neon_f32_tile() {
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
 
-    mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, 4,4);
-    show_mat_1G(C);
+    mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, 4, 4);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
-    show_mat_1G(D);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
     

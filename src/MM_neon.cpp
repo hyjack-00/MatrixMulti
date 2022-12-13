@@ -1,8 +1,8 @@
 #include "MM_neon.h"
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
-using std::cout;
-using std::endl;
+// using std::cout;
+// using std::endl;
 
 #ifdef __ARM_NEON
 

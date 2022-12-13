@@ -235,24 +235,17 @@ void mm_1G_f32_vec_tile_noK(float32_t *A, float32_t *B, float32_t *C,
 
     for (int ii = 0; ii < m; ii += Ti) {
         int iend = MIN(m ,ii+Ti);
-        cout << ii << endl;
-        for (int jj = 0; jj < n; jj += Tj) {
-            int jend = MIN(n, jj+Tj);
-            cout << "  " << jj << endl;
-            for (int kk = 0; kk < p; kk += Tk) {
-                int kend = MIN(p, kk+Tk);
-                cout << "    " << kk << endl;
+     for (int jj = 0; jj < n; jj += Tj) {
+        int jend = MIN(n, jj+Tj);
+
         for (int i = ii; i < iend; i += 4) {
-            cout << "    i " << i << endl;
             for (int j = jj; j < jend; j += 4) {
-                cout << "      j " << j << endl;
                 C0 = vmovq_n_f32(0);
                 C1 = vmovq_n_f32(0);
                 C2 = vmovq_n_f32(0);
                 C3 = vmovq_n_f32(0);
 
-                for (int k = kk; k < kend; k += 4) {
-                    cout << "          k " << k << endl;
+                for (int k = 0; k < p; k += 4) {
                     a = i*p + k;
                     b = k*n + j;
 
@@ -294,9 +287,8 @@ void mm_1G_f32_vec_tile_noK(float32_t *A, float32_t *B, float32_t *C,
             }  // j
         }  // i
 
-      }  // ii
      }  // jj
-    }  // kk
+    }  // ii
     
 }
 

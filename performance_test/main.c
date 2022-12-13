@@ -12,7 +12,7 @@ void kernel_2(int);  // f32
 void kernel_3(int);  // f64
 void kernel_4(int);  // s32
 
-#define OP_PER_LOOP_K1 (12 * 2 * 4)
+#define OP_PER_LOOP_K1 (10 * 2 * 4)
 #define OP_PER_LOOP_K2 (32 * 2 * 4)
 #define OP_PER_LOOP_K3 (32 * 2 * 2)
 #define OP_PER_LOOP_K4 (32 * 2 * 4)

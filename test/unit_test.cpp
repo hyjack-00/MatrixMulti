@@ -87,7 +87,7 @@ int main() {
     #endif
     
     // double r = 0, nr = 0;
-    for (int i = 0; i < 10; i ++) {
+    for (int i = 0; i < 1; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile();
@@ -110,7 +110,7 @@ void test_neon_f32_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 4, p = 128, n = 4;
+    constexpr int loop = 1, m = 4, p = 128, n = 4;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);

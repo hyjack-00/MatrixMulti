@@ -102,9 +102,10 @@ void test_neon_s32() {
 
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    OS << (Vec == Ans) ? "Correct" : "Wrong!!" << endl;
+    (Vec    == Ans) ? OS << "Correct" : OS << "Wrong!! ";
     mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
-    OS << (VecPtr == Ans) ? "Correct" : "Wrong!!" << endl;
+    (VecPtr == Ans) ? OS << "Correct" : OS << "Wrong!!";
+    OS << endl;
 
     auto start = Now;
     for (int i = 0; i < loop; i ++) {

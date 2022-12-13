@@ -17,7 +17,6 @@ kernel_1:
     fmla v7.4s, v7.4s, v7.4s
 
     fmla v8.4s, v8.4s, v8.4s
-    fmla v9.4s, v9.4s, v9.4s
 
     subs x0, x0, #1
     bne .loop1

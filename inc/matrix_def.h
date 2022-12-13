@@ -118,7 +118,7 @@ struct Mat_1D
     }
     bool operator==(const Mat_1D<float> &M)
     {
-        static constexpr float ERR = 1e-6;
+        static constexpr float ERR = 0.00001;
         if (size != M.size) return false;
         for (int i = 0; i < size * size; i++)
             if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR)
@@ -127,7 +127,7 @@ struct Mat_1D
     }
     bool operator==(const Mat_1D<double> &M)
     {
-        static constexpr float ERR = 1e-9;
+        static constexpr float ERR = 1e-6;
         if (size != M.size) return false;
         for (int i = 0; i < size * size; i++)
             if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR)

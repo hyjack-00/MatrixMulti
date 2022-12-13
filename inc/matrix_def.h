@@ -23,7 +23,6 @@ struct Mat_1G {
     }
     ~Mat_1G() { delete[] data; }
 };
-
 template <>
 struct Mat_1G<int> {
     int width, height;
@@ -43,7 +42,6 @@ struct Mat_1G<int> {
         return true;
     }
 };
-
 template <>
 struct Mat_1G<float> {
     int width, height;
@@ -56,6 +54,26 @@ struct Mat_1G<float> {
 
     bool operator==(const Mat_1G<float> &M) {
         static constexpr float ERR = 1e-6;
+        if (width != M.width || height != M.height) 
+            return false;
+        for (int i = 0; i < width * height; i++)
+            if (data[i] - M.data[i] < ERR && M.data[i] - data[i] < ERR)
+                return false;
+        return true;
+    }
+};
+template <>
+struct Mat_1G<double> {
+    int width, height;
+    double *data;
+
+    Mat_1G(int w=0, int h=0) : width(w), height(h) {
+        data = new double[w * h];
+    }
+    ~Mat_1G() { delete[] data; }
+
+    bool operator==(const Mat_1G<double> &M) {
+        static constexpr double ERR = 1e-9;
         if (width != M.width || height != M.height) 
             return false;
         for (int i = 0; i < width * height; i++)
@@ -162,6 +180,8 @@ struct Mat_2C
 
 // # BASIC MATRIX FUNC
 //  Benchmark MM (Matrix Multiplication)
+
+// Mat_1G
 template <typename T>
 void mm_1G_benchmark(T *A, T *B, T *C, int m, int p, int n) {
     for (int i = 0; i < m; i ++)
@@ -170,7 +190,7 @@ void mm_1G_benchmark(T *A, T *B, T *C, int m, int p, int n) {
                 C[i*m+j] += A[i*m+k] * B[k*p+j];
 }
 
-//  Mat_1D
+// Mat_1D
 template <typename T>
 void mm_1D_benchmark(T *A, T *B, T *C, int size)
 {

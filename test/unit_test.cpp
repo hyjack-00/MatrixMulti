@@ -3,7 +3,6 @@
 #include "MM_neon.h"
 
 #include <iostream>
-#include <fstream>
 #include <iomanip>
 #include <stdlib.h>
 #include <string.h>
@@ -15,20 +14,16 @@
 
 using namespace std;
 
-#define FILE_OUTPUT false
-
-#define LOOP_S  10
-#define LOOP_M  50
-#define LOOP_L  100
-
 // File IO
+#define FILE_OUTPUT false
+string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
+    #include <fstream>
     #define OS ofs
+    ofstream ofs;
 #else
     #define OS cout
 #endif 
-ofstream ofs;
-string ouput_file = "output/output1.txt";
 
 // Simplified time counter
 /* 
@@ -61,11 +56,9 @@ void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed);
 // Unit test -----------------------------------------------------------
 
 void test_neon_s32();
-
 void test_cal_correct();
 void test_tile_reg(double &reg, double &no_reg);
 void test_tile();
-
 void test_reg_restrict();
 void test_mat_access_speed();
 
@@ -78,7 +71,7 @@ int main() {
     #endif
     
     // double r = 0, nr = 0;
-    for (int i = 0; i < 1; i ++) {
+    for (int i = 0; i < 10; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile();
@@ -99,19 +92,23 @@ void test_neon_s32() {
     constexpr int loop = 10, m = 1024, p = 512, n = 512;
     OS << "Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
-    #ifdef __ARM_NEON
-        OS << "NEON!!!" << endl;
-    #else
-        OS << "NO NEON ENV..." << endl;
-    #endif
 
-    Mat_1G<int> A(m, p), B(p, n), C(m, n);
+    Mat_1G<int> A(m, p), B(p, n), Vec(m, n), VecPtr(m, n), Ans(m, n);
     rand_mat_1G_s32(A, RAND_SEED1);
     rand_mat_1G_s32(B, RAND_SEED2);
-    memset(C.data, 0, sizeof(int)*m*n);
+
+    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
+    OS << (Vec == Ans) ? "Correct" : "Wrong" << endl;
+    mm_1G_s32_vec_ptr(A.data, B.data, VecPtr.data, m, p, n);
+    OS << (VecPtr == Ans) ? "Correct" : "Wrong" << endl;
+
+    auto start = Now;
     for (int i = 0; i < loop; i ++) {
-        mm_1G_benchmark(A.data, B.data, C.data, m, p, n);
+        mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
     }
+    auto end = Now;
+    OS << Dur(start, end) << endl;
 }
 
 void test_cal_correct() {

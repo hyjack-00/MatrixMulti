@@ -15,7 +15,7 @@
 using namespace std;
 
 // File IO
-#define FILE_OUTPUT false
+#define FILE_OUTPUT true
 string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
     #include <fstream>
@@ -87,7 +87,7 @@ int main() {
     #endif
     
     // double r = 0, nr = 0;
-    for (int i = 0; i < 1; i ++) {
+    for (int i = 0; i < 10; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile();
@@ -107,26 +107,31 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 10, m = 64, p = 64, n = 1024;
+    constexpr int loop = 10, size = 32;
+    constexpr int m = size, p = size, n = size;
+    constexpr int Ti_start = 4, Tj_start = 16, Tk_start = 16;
+    constexpr int Ti_end = m, Tj_end = n, Tk_end = p;
+
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
-    Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, m);
+    Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, n);
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
 
-    // mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, 4, 4);
+    // Correctness
+    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4, 16, 16);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
     
     priority_queue<Rec_tile> q;
-    for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
+    for (int x = 1; x <= 30; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前30
 
-    OS << "  Ti   Tj   Time" << endl;
-    for (int Ti = 8; Ti <= 32; Ti += 8) {
-        for (int Tj = 16; Tj <= 256; Tj += 16) {
-                OS << setw(4) << Ti << " " << setw(4) << Tj << "   ";
-
+    OS << "  Ti   Tj   Tk   Time" << endl;
+    for (int Ti = Ti_start; Ti <= Ti_end; Ti += 4) {
+        for (int Tj = Tj_start; Tj <= Tj_end; Tj += 16) {
+            // k 不分块
+                OS << setw(4) << Ti << " " << setw(4) << Tj << "    0   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);
@@ -140,17 +145,35 @@ void test_neon_f32_tile() {
                     OS << " recorded";
                 }
                 OS << endl;
+
+            // k 分块
+            for (int Tk = Tk_start; Tk <= Tk_end; Tk += 16) {
+                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+                auto start = Now;
+                for (int l = 0; l < loop; l ++) {
+                    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, Ti, Tj, Tk);
+                }
+                auto end = Now;
+                double dur = Dur(start, end);
+                OS << dur;
+                if (dur < q.top().time) {  // 进入前20
+                    q.pop();
+                    q.push(Rec_tile(Ti, Tj, Tk, dur));
+                    OS << " recorded";
+                }
+                OS << endl;
+            }
         }
     }
 
-    // 展示前20
-    OS << endl << "====================== Speedest 20 ======================" << endl;
+    // 展示前30
+    OS << endl << "====================== Speedest 30 ======================" << endl;
     OS << "  Ti   Tj   Tk   Time" << endl;
     while (!q.empty()) {
         Rec_tile r = q.top();
         q.pop();
-        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << "   ";
-        OS << r.time << endl;
+        OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
+        OS << setprecision(8) << r.time << endl;
     }
 }
 

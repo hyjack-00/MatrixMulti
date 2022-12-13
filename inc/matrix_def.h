@@ -187,7 +187,7 @@ void mm_1G_benchmark(T *A, T *B, T *C, int m, int p, int n) {
     for (int i = 0; i < m; i ++)
         for (int k = 0; k < p; k ++)
             for (int j = 0; j < n; j ++)
-                C[i*m+j] += A[i*m+k] * B[k*p+j];
+                C[i*m+j] += A[i*p+k] * B[k*n+j];
 }
 
 // Mat_1D

@@ -124,10 +124,10 @@ void test_neon_f32_tile() {
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20
 
-    OS << "  Ti   Tj   Tk   Time" << endl;
+    OS << "  Ti   Tj   Time" << endl;
     for (int Ti = 8; Ti <= 32; Ti += 8) {
         for (int Tj = 16; Tj <= 256; Tj += 16) {
-                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
+                OS << setw(4) << Ti << " " << setw(4) << Tj << " " << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
                     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);

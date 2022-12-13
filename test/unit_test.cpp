@@ -53,6 +53,7 @@ void show_mat_1G(Mat_1G<T> &M) {
             OS << setw(6) << M.data[i*w + j] << " ";
         OS << endl;
     }
+    OS << endl;
 }
 
 // Random init

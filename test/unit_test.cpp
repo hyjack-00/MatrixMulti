@@ -107,7 +107,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 10, size = 32;
+    constexpr int loop = 100, size = 1024;
     constexpr int m = size, p = size, n = size;
     constexpr int Ti_start = 4, Tj_start = 16, Tk_start = 16;
     constexpr int Ti_end = m, Tj_end = n, Tk_end = p;

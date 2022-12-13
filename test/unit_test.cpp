@@ -107,14 +107,14 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 10, m = 64, p = 64, n = 64;
+    constexpr int loop = 10, m = 16, p = 16, n = 16;
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, m);
     rand_mat_1G_f32(A, RAND_SEED1);
     rand_mat_1G_f32(B, RAND_SEED2);
 
-    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4, 16, 16);
+    mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4, 8, 8);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }

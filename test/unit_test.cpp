@@ -89,10 +89,8 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
-
-
 void test_neon_s32() {
-    constexpr int loop = 10, m = 1024, p = 512, n = 512;
+    constexpr int loop = 10, m = 1024, p = 1024, n = 1024;
     OS << "Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
 
@@ -107,12 +105,12 @@ void test_neon_s32() {
     (VecPtr == Ans) ? OS << "Correct" : OS << "Wrong!!";
     OS << endl;
 
-    auto start = Now;
-    for (int i = 0; i < loop; i ++) {
-        mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
-    }
-    auto end = Now;
-    OS << Dur(start, end) << endl;
+    // auto start = Now;
+    // for (int i = 0; i < loop; i ++) {
+    //     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
+    // }
+    // auto end = Now;
+    // OS << Dur(start, end) << endl;
 }
 
 void test_cal_correct() {

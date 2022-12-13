@@ -250,7 +250,7 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
                 for (int k = kk; k < kend; k += 4) {
                     a = i*p + k;
                     b = k*n + j;
-                    cout << "    (" << a << "," b << ")" << endl;
+                    cout << "    (" << a << "," << b << ")" << endl;
 
                     B0 = vld1q_f32(B + b);
                     B1 = vld1q_f32(B + b + n);

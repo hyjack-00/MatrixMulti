@@ -236,10 +236,10 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
     float32x4_t C3;
 
     for (int ii = 0; ii < m; ii += Ti) {
-        int iend = MIN(m ,ii+Ti);
-    for (int jj = 0; jj < n; jj += Tj) {
-        int jend = MIN(n, jj+Tj);
-    for (int kk = 0; kk < p; kk += Tk) {
+     int iend = MIN(m ,ii+Ti);
+     for (int jj = 0; jj < n; jj += Tj) {
+      int jend = MIN(n, jj+Tj);
+      for (int kk = 0; kk < p; kk += Tk) {
         int kend = MIN(p, kk+Tk);
 
         for (int i = 0; i < iend; i += 4) {
@@ -291,8 +291,8 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
             }  // j
         }  // i
 
-    }  // ii
-    }  // jj
+      }  // ii
+     }  // jj
     }  // kk
 
     

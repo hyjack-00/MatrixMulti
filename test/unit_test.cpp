@@ -346,19 +346,19 @@ void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed) {
 void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed) {
     srand(seed);
     int sz = M.width * M.height;
-    for (int i = 0; i < sz*sz; i ++) 
+    for (int i = 0; i < sz; i ++) 
         M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
 void rand_mat_1G_f32(Mat_1G<float> &M, unsigned int seed) {
     srand(seed);
     int sz = M.width * M.height;
-    for (int i = 0; i < sz*sz; i ++) 
+    for (int i = 0; i < sz; i ++) 
         M.data[i] = ((float)rand() / ((float)RAND_MAX / (RAND_UB - RAND_LB))) + RAND_LB;
 }
 void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed) {
     srand(seed);
     int sz = M.width * M.height;
-    for (int i = 0; i < sz*sz; i ++) 
+    for (int i = 0; i < sz; i ++) 
         M.data[i] = ((double)rand() / ((double)RAND_MAX / (RAND_UB - RAND_LB))) + RAND_LB;
 }
 

@@ -1,11 +1,10 @@
 #include "MM_neon.h"
 
-// #define __ARM_NEON
+#ifndef __aarch64
+#define __ARM_NEON  // For Highlighting
+#endif
 
 #ifdef __ARM_NEON
-void mm_1D_s32_vec(int32_t *A, int32_t *B, int32_t *C, uint32_t size) {
-
-}
 
 void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,
                    int32_t m, int32_t p, int32_t n) {
@@ -37,30 +36,30 @@ void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,
                 a = i*m + k;
                 b = k*p + j;
 
-                B0 = vld1q_s32(B[b]);
-				B1 = vld1q_s32(B[b + n]);
-				B2 = vld1q_s32(B[b + n*2]);
-				B3 = vld1q_s32(B[b + n*3]);
+                B0 = vld1q_s32(B + b);
+				B1 = vld1q_s32(B + b + n);
+				B2 = vld1q_s32(B + b + n*2);
+				B3 = vld1q_s32(B + b + n*3);
 
-                A0 = vld1q_s32(A[a]);
+                A0 = vld1q_s32(A + a);
                 C0 = vfmaq_laneq_s32(C0, B0, A0, 0);
 				C0 = vfmaq_laneq_s32(C0, B1, A0, 1);
 				C0 = vfmaq_laneq_s32(C0, B2, A0, 2);
 				C0 = vfmaq_laneq_s32(C0, B3, A0, 3);
 
-				A1 = vld1q_s32(A[a + p]);
+				A1 = vld1q_s32(A + a + p);
 				C1 = vfmaq_laneq_s32(C1, B0, A1, 0);
 				C1 = vfmaq_laneq_s32(C1, B1, A1, 1);
 				C1 = vfmaq_laneq_s32(C1, B2, A1, 2);
 				C1 = vfmaq_laneq_s32(C1, B3, A1, 3);
 
-				A2 = vld1q_s32(A[a + p*2]);
+				A2 = vld1q_s32(A + a + p*2);
 				C2 = vfmaq_laneq_s32(C2, B0, A2, 0);
 				C2 = vfmaq_laneq_s32(C2, B1, A2, 1);
 				C2 = vfmaq_laneq_s32(C2, B2, A2, 2);
 				C2 = vfmaq_laneq_s32(C2, B3, A2, 3);
 
-				A3 = vld1q_s32(A[a + p*3]);
+				A3 = vld1q_s32(A + a + p*3);
 				C3 = vfmaq_laneq_s32(C3, B0, A3, 0);
 				C3 = vfmaq_laneq_s32(C3, B1, A3, 1);
 				C3 = vfmaq_laneq_s32(C3, B2, A3, 2);
@@ -68,10 +67,10 @@ void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,
             }
 
             c = i*n + j;
-            vst1q_s32(C[c], C0);
-            vst1q_s32(C[c + n], C1);
-            vst1q_s32(C[c + n*2], C2);
-            vst1q_s32(C[c + n*3], C3);
+            vst1q_s32(C + c, C0);
+            vst1q_s32(C + c + n, C1);
+            vst1q_s32(C + c + n*2, C2);
+            vst1q_s32(C + c + n*3, C3);
         }
     } 
 }
@@ -106,30 +105,30 @@ void mm_1G_f32_vec(float32_t *A, float32_t *B, float32_t *C,
                 a = i*m + k;
                 b = k*p + j;
 
-                B0 = vld1q_f32(B[b]);
-				B1 = vld1q_f32(B[b + n]);
-				B2 = vld1q_f32(B[b + n*2]);
-				B3 = vld1q_f32(B[b + n*3]);
+                B0 = vld1q_f32(B + b);
+				B1 = vld1q_f32(B + b + n);
+				B2 = vld1q_f32(B + b + n*2);
+				B3 = vld1q_f32(B + b + n*3);
 
-                A0 = vld1q_f32(A[a]);
+                A0 = vld1q_f32(A + a);
                 C0 = vfmaq_laneq_f32(C0, B0, A0, 0);
 				C0 = vfmaq_laneq_f32(C0, B1, A0, 1);
 				C0 = vfmaq_laneq_f32(C0, B2, A0, 2);
 				C0 = vfmaq_laneq_f32(C0, B3, A0, 3);
 
-				A1 = vld1q_f32(A[a + p]);
+				A1 = vld1q_f32(A + a + p);
 				C1 = vfmaq_laneq_f32(C1, B0, A1, 0);
 				C1 = vfmaq_laneq_f32(C1, B1, A1, 1);
 				C1 = vfmaq_laneq_f32(C1, B2, A1, 2);
 				C1 = vfmaq_laneq_f32(C1, B3, A1, 3);
 
-				A2 = vld1q_f32(A[a + p*2]);
+				A2 = vld1q_f32(A + a + p*2);
 				C2 = vfmaq_laneq_f32(C2, B0, A2, 0);
 				C2 = vfmaq_laneq_f32(C2, B1, A2, 1);
 				C2 = vfmaq_laneq_f32(C2, B2, A2, 2);
 				C2 = vfmaq_laneq_f32(C2, B3, A2, 3);
 
-				A3 = vld1q_f32(A[a + p*3]);
+				A3 = vld1q_f32(A + a + p*3);
 				C3 = vfmaq_laneq_f32(C3, B0, A3, 0);
 				C3 = vfmaq_laneq_f32(C3, B1, A3, 1);
 				C3 = vfmaq_laneq_f32(C3, B2, A3, 2);
@@ -137,10 +136,10 @@ void mm_1G_f32_vec(float32_t *A, float32_t *B, float32_t *C,
             }
 
             c = i*n + j;
-            vst1q_f32(C[c], C0);
-            vst1q_f32(C[c + n], C1);
-            vst1q_f32(C[c + n*2], C2);
-            vst1q_f32(C[c + n*3], C3);
+            vst1q_f32(C + c, C0);
+            vst1q_f32(C + c + n, C1);
+            vst1q_f32(C + c + n*2, C2);
+            vst1q_f32(C + c + n*3, C3);
         }
     } 
 }

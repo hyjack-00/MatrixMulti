@@ -120,7 +120,7 @@ void test_neon_s32() {
     rand_mat_1G_s32(A, RAND_SEED1);
     rand_mat_1G_s32(B, RAND_SEED2);
 
-    Correcetness check
+    // Correcetness check
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     mm_1G_s32_vec(A.data, B.data, Vec.data, m, p, n);
     (Vec    == Ans) ? OS << "Correct " : OS << "Wrong!! ";

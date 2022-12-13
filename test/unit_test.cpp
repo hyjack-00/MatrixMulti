@@ -116,8 +116,8 @@ void test_neon_f32_tile() {
 
     mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 4, 16, 16);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
-    if (C == D) 
-        OS << "Correct" << endl;
+    if (C == D) OS << "Correct" << endl;
+    else { OS << "Wrong!!" << endl; return; }
 
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20

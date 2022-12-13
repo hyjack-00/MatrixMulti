@@ -1,6 +1,6 @@
 #include "MM_neon.h"
 
-#ifndef __aarch64
+#ifndef __arm__
 #define __ARM_NEON  // For Highlighting
 #endif
 

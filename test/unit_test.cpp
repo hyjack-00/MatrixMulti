@@ -115,9 +115,9 @@ void test_neon_f32_tile() {
     rand_mat_1G_f32(B, RAND_SEED2);
 
     // mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, 4, 4);
-    // mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
-    // if (C == D) OS << "Correct" << endl;
-    // else { OS << "Wrong!!" << endl; return; }
+    mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
+    if (C == D) OS << "Correct" << endl;
+    else { OS << "Wrong!!" << endl; return; }
     
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 20; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前20

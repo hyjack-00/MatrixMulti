@@ -59,8 +59,8 @@ void show_mat_1G(Mat_1G<T> &M) {
 // Random init
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
-#define RAND_UB 1000  // [LB, UB)
-#define RAND_LB -1000
+#define RAND_UB 10  // [LB, UB)
+#define RAND_LB -10
 void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed);
 void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed);
 void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed);
@@ -110,7 +110,7 @@ void test_neon_f32_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 4, p = 512, n = 4;
+    constexpr int loop = 100, m = 4, p = 128, n = 4;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);

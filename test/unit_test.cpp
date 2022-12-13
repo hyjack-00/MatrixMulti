@@ -107,7 +107,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 10, m = 1024, p = 1024, n = 1024;
+    constexpr int loop = 10, m = 64, p = 64, n = 64;
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), D(m, m);

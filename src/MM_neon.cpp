@@ -292,6 +292,13 @@ void mm_1G_f32_vec_tile_noK(float32_t *A, float32_t *B, float32_t *C,
     
 }
 
+void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
+                        int32_t m, int32_t p, int32_t n,
+                        int32_t Ti, int32_t Tj, int32_t Tk) {
+    
+    
+}
+
 
 #else
 // Not NEON env

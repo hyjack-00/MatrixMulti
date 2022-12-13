@@ -120,9 +120,9 @@ void test_neon_f32() {
     show_mat_1G(B);
 
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
-    // show_mat_1G(Ans);
+    show_mat_1G(Ans);
     mm_1G_f32_vec(A.data, B.data, C.data, m, p, n); //, m, n, p);
-    // show_mat_1G(C);
+    show_mat_1G(C);
 
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong!!" << endl;

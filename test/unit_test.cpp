@@ -87,7 +87,7 @@ int main() {
     #endif
     
     // double r = 0, nr = 0;
-    for (int i = 0; i < 10; i ++) {
+    for (int i = 0; i < 1; i ++) {
         // test_mat_access_speed();
         // test_reg_restrict();
         // test_tile();
@@ -115,7 +115,9 @@ void test_neon_f32_tile() {
     rand_mat_1G_f32(B, RAND_SEED2);
 
     mm_1G_f32_vec_tile(A.data, B.data, C.data, m, p, n, 8, 8, 8);
+    show_mat_1G(C);
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
+    show_mat_1G(D);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
 

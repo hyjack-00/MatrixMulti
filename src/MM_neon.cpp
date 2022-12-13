@@ -35,8 +35,8 @@ void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,
             C3 = vmovq_n_s32(0);
 
             for (int k = 0; k < p; k += 4) {
-                a = i*m + k;
-                b = k*p + j;
+                a = i*p + k;
+                b = k*n + j;
 
                 B0 = vld1q_s32(B + b);
 				B1 = vld1q_s32(B + b + n);
@@ -104,8 +104,8 @@ void mm_1G_f32_vec(float32_t *A, float32_t *B, float32_t *C,
             C3 = vmovq_n_f32(0);
 
             for (int k = 0; k < p; k += 4) {
-                a = i*m + k;
-                b = k*p + j;
+                a = i*p + k;
+                b = k*n + j;
 
                 B0 = vld1q_f32(B + b);
 				B1 = vld1q_f32(B + b + n);
@@ -173,8 +173,8 @@ void mm_1G_s32_vec_ptr(int32_t *A, int32_t *B, int32_t *C,
             C3 = vmovq_n_s32(0);
 
             for (int k = 0; k < p; k += 4) {
-                Ai = A + i*m + k;
-                Bi = B + k*p + j;
+                Ai = A + i*p + k;
+                Bi = B + k*n + j;
 
                 B0 = vld1q_s32(Bi);
 				B1 = vld1q_s32(Bi + n);
@@ -250,8 +250,8 @@ void mm_1G_f32_vec_tile(float32_t *A, float32_t *B, float32_t *C,
                 C3 = vmovq_n_f32(0);
 
                 for (int k = 0; k < kend; k += 4) {
-                    a = i*m + k;
-                    b = k*p + j;
+                    a = i*p + k;
+                    b = k*n + j;
 
                     B0 = vld1q_f32(B + b);
                     B1 = vld1q_f32(B + b + n);

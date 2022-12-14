@@ -15,7 +15,7 @@
 using namespace std;
 
 // File IO
-#define FILE_OUTPUT true
+#define FILE_OUTPUT false
 string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
     #include <fstream>

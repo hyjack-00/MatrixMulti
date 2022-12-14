@@ -109,11 +109,11 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 5, size = 128;
+    constexpr int loop = 5, size = 1024;
     constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 4, Tj_start = 16, Tk_start = 16;
+    constexpr int Ti_start = 16, Tj_start = 16, Tk_start = 16;
     constexpr int Ti_end = size, Tj_end = size, Tk_end = size;
-    constexpr int Ti_step = 4, Tj_step = 16, Tk_step = 16;
+    constexpr int Ti_step = 16, Tj_step = 16, Tk_step = 16;
 
     OS << "Neon + Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -142,7 +142,7 @@ void test_neon_f32_tile() {
                 }
                 auto end = Now;
                 double dur = Dur(start, end);
-                OS << dur;
+                OS << setprecision(12) << dur;
                 if (dur < q.top().time) {  // 进入前40
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, 0, dur));
@@ -159,7 +159,7 @@ void test_neon_f32_tile() {
                 }
                 auto end = Now;
                 double dur = Dur(start, end);
-                OS << dur;
+                OS << setprecision(12) << dur;
                 if (dur < q.top().time) {  // 进入前40
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, Tk, dur));

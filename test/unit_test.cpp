@@ -109,10 +109,10 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 5, size = 1024;
+    constexpr int loop = 5, size = 64;
     constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 8, Tj_start = 64, Tk_start = 64;
-    constexpr int Ti_end = 512, Tj_end = 256, Tk_end = 256;
+    constexpr int Ti_start = 16, Tj_start = 16, Tk_start = 16;
+    constexpr int Ti_end = size, Tj_end = size, Tk_end = size;
 
     OS << "Neon+Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -128,11 +128,11 @@ void test_neon_f32_tile() {
     else { OS << "Wrong!!" << endl; return; }
     
     priority_queue<Rec_tile> q;
-    for (int x = 1; x <= 30; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前30
+    for (int x = 1; x <= 40; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前40
 
     OS << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = Ti_start; Ti <= Ti_end; Ti += 8) {
-        for (int Tj = Tj_start; Tj <= Tj_end; Tj += 64) {
+    for (int Ti = Ti_start; Ti <= Ti_end; Ti += 16) {
+        for (int Tj = Tj_start; Tj <= Tj_end; Tj += 16) {
             // k 不分块
                 OS << setw(4) << Ti << " " << setw(4) << Tj << "    0   ";
                 auto start = Now;
@@ -142,7 +142,7 @@ void test_neon_f32_tile() {
                 auto end = Now;
                 double dur = Dur(start, end);
                 OS << dur;
-                if (dur < q.top().time) {  // 进入前20
+                if (dur < q.top().time) {  // 进入前40
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, 0, dur));
                     OS << " recorded";
@@ -150,7 +150,7 @@ void test_neon_f32_tile() {
                 OS << endl;
 
             // k 分块
-            for (int Tk = Tk_start; Tk <= Tk_end; Tk += 64) {
+            for (int Tk = Tk_start; Tk <= Tk_end; Tk += 16) {
                 OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
@@ -159,7 +159,7 @@ void test_neon_f32_tile() {
                 auto end = Now;
                 double dur = Dur(start, end);
                 OS << dur;
-                if (dur < q.top().time) {  // 进入前20
+                if (dur < q.top().time) {  // 进入前40
                     q.pop();
                     q.push(Rec_tile(Ti, Tj, Tk, dur));
                     OS << " recorded";
@@ -170,7 +170,7 @@ void test_neon_f32_tile() {
     }
 
     // 展示前30
-    OS << endl << "====================== Speedest 30 ======================" << endl;
+    OS << endl << "====================== Speedest 40 ======================" << endl;
     OS << "  Ti   Tj   Tk   Time" << endl;
     while (!q.empty()) {
         Rec_tile r = q.top();

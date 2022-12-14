@@ -112,7 +112,7 @@ void test_neon_f32_tile() {
     constexpr int loop = 5, size = 1024;
     constexpr int m = size, p = size, n = size;
     constexpr int Ti_start = 16, Tj_start = 16, Tk_start = 16;
-    constexpr int Ti_end = size, Tj_end = size, Tk_end = size;
+    constexpr int Ti_end = 512, Tj_end = 512, Tk_end = 256;
     constexpr int Ti_step = 16, Tj_step = 16, Tk_step = 16;
 
     OS << "Neon + Tile test f32: Loop-" << loop;

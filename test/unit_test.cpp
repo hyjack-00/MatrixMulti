@@ -177,7 +177,7 @@ void test_neon_f32_tile() {
         Rec_tile r = q.top();
         q.pop();
         OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
-        OS << setprecision(8) << r.time << endl;
+        OS << setprecision(12) << r.time << endl;
     }
 }
 

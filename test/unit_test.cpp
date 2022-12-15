@@ -109,11 +109,11 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_neon_f32_tile() {
-    constexpr int loop = 5, size = 1024;
+    constexpr int loop = 10, size = 1024;
     constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 16, Tj_start = 16, Tk_start = 16;
-    constexpr int Ti_end = 512, Tj_end = 512, Tk_end = 256;
-    constexpr int Ti_step = 16, Tj_step = 16, Tk_step = 16;
+    constexpr int Ti_start = 4, Tj_start = 16, Tk_start = 16;
+    constexpr int Ti_end = 56, Tj_end = 100, Tk_end = 100;
+    constexpr int Ti_step = 4, Tj_step = 16, Tk_step = 16;
 
     OS << "Neon + Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -127,13 +127,6 @@ void test_neon_f32_tile() {
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
-
-    auto start0 = Now;
-    for (int l = 0; l < 500; l ++) {
-        mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
-    }
-    auto end0 = Now;
-    OS << "vec benchmark: " << Dur(start0, end0) << endl;
     
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 40; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前40
@@ -186,6 +179,13 @@ void test_neon_f32_tile() {
         OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
         OS << setprecision(12) << r.time << endl;
     }
+
+    auto start0 = Now;
+    for (int l = 0; l < loop; l ++) {
+        mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
+    }
+    auto end0 = Now;
+    OS << "vec benchmark: " << Dur(start0, end0) << endl;
 }
 
 void test_neon_f32() {

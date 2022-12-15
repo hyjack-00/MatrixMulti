@@ -4,15 +4,15 @@
 
 #ifdef __ARM_NEON
 #include <arm_neon.h>
-#else
-typedef float float32_t;
-typedef double float64_t;
+#else 
+typedef float32_t float;
 #endif
 
-// BASIC NEON 
+// Basic NEON 
 void mm_1D_s32_vec(int32_t *A, int32_t *B, int32_t *C, int32_t size); 
 void mm_1D_f32_vec(float32_t *A, float32_t *B, float32_t *C, int32_t size); 
 
+// General Matrix
 void mm_1G_s32_vec(int32_t *A, int32_t *B, int32_t *C,
                     int32_t m, int32_t p, int32_t n);
 void mm_1G_f32_vec(float32_t *A, float32_t *B, float32_t *C,

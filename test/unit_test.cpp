@@ -15,7 +15,7 @@
 using namespace std;
 
 // File IO
-#define FILE_OUTPUT false
+#define FILE_OUTPUT true
 string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
     #include <fstream>
@@ -69,7 +69,8 @@ void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
-void test_neon_f32_tile();
+void test_paral();
+void test_neon_tile();
 void test_neon_f32();
 void test_neon_s32();
 void test_cal_correct();
@@ -87,7 +88,7 @@ int main() {
     #endif
     
     // double r = 0, nr = 0;
-    for (int i = 0; i < 1; i ++) {
+    for (int i = 0; i < 10; i ++) {
         cout << "Test No." << i 
              << " =============================" << endl;
         // test_mat_access_speed();
@@ -97,7 +98,7 @@ int main() {
         // test_cal_correct();
         // test_neon_s32();
         // test_neon_f32();
-        test_neon_f32_tile();
+        test_neon_tile();
     }
     cout << "Test end." << endl;
 
@@ -108,12 +109,16 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
-void test_neon_f32_tile() {
+void test_paral() {
+
+}
+
+void test_neon_tile() {
     constexpr int loop = 10, size = 1024;
     constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 4, Tj_start = 16, Tk_start = 16;
-    constexpr int Ti_end = 56, Tj_end = 100, Tk_end = 100;
-    constexpr int Ti_step = 4, Tj_step = 16, Tk_step = 16;
+    constexpr int Ti_start = 32, Tj_start = 32, Tk_start = 32;
+    constexpr int Ti_end = 1024, Tj_end = 1024, Tk_end = 1024;
+    constexpr int Ti_step = 32, Tj_step = 32, Tk_step = 32;
 
     OS << "Neon + Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -169,6 +174,12 @@ void test_neon_f32_tile() {
             }
         }
     }
+    auto start0 = Now;
+    for (int l = 0; l < loop; l ++) {
+        mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
+    }
+    auto end0 = Now;
+    OS << "vec benchmark: " << Dur(start0, end0) << endl;
 
     // 展示前30
     OS << endl << "====================== Speedest 40 ======================" << endl;
@@ -179,13 +190,6 @@ void test_neon_f32_tile() {
         OS << setw(4) << r.Ti << " " << setw(4) << r.Tj << " " << setw(4) << r.Tk << "   ";
         OS << setprecision(12) << r.time << endl;
     }
-
-    auto start0 = Now;
-    for (int l = 0; l < loop; l ++) {
-        mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
-    }
-    auto end0 = Now;
-    OS << "vec benchmark: " << Dur(start0, end0) << endl;
 }
 
 void test_neon_f32() {

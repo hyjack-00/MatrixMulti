@@ -129,7 +129,9 @@ void test_neon_f32_tile() {
     else { OS << "Wrong!!" << endl; return; }
 
     auto start0 = Now;
-    mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
+    for (int l = 0; l < loop; l ++) {
+        mm_1G_f32_vec(A.data, B.data, C.data, m, p, n);
+    }
     auto end0 = Now;
     OS << "vec benchmark: " << Dur(start0, end0) << endl;
     

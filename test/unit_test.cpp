@@ -15,7 +15,7 @@
 using namespace std;
 
 // File IO
-#define FILE_OUTPUT true
+#define FILE_OUTPUT false
 string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
     #include <fstream>
@@ -127,6 +127,11 @@ void test_neon_f32_tile() {
     mm_1G_benchmark(A.data, B.data, D.data, m, p, n);
     if (C == D) OS << "Correct" << endl;
     else { OS << "Wrong!!" << endl; return; }
+
+    auto start0 = Now;
+    mm_1G_f32_vec(A.data, B.data, C.data, m, p. n);
+    auto end0 = Now;
+    OS << "vec benchmark: " << Dur(start0, end0) << endl;
     
     priority_queue<Rec_tile> q;
     for (int x = 1; x <= 40; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前40

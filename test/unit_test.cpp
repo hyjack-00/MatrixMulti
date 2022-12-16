@@ -1,6 +1,7 @@
 #include "matrix_def.h"
 #include "MM_tile.h"
 #include "MM_neon.h"
+#include "MM_paral.h"
 
 #include <iostream>
 #include <iomanip>
@@ -15,7 +16,7 @@
 using namespace std;
 
 // File IO
-#define FILE_OUTPUT true
+#define FILE_OUTPUT false
 string ouput_file = "output/output1.txt";
 #if FILE_OUTPUT == true
     #include <fstream>
@@ -98,7 +99,8 @@ int main() {
         // test_cal_correct();
         // test_neon_s32();
         // test_neon_f32();
-        test_neon_tile();
+        // test_neon_tile();
+        test_paral();
     }
     cout << "Test end." << endl;
 
@@ -110,15 +112,46 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_paral() {
+    int loop = 5, size = 1024;
+    int m = size, p = size, n = size;
+    OS << "Paral test: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
+    Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
+    rand_mat_1G_s32(A, 1234);
+    rand_mat_1G_s32(B, 5678);
 
+    memset(Ans.data, 0, sizeof(int)*m*n);
+    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    memset(C.data, 0, sizeof(int)*m*n);
+    mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    if (C == Ans) OS << "Correct" << endl;
+    else OS << "Wrong" << endl;
+
+    auto start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_1G_benchmark(A.data, B.data, C.data, m, p, n);
+    auto end = Now;
+    OS << "benchmark: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "fake parallel: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel: " << Dur(start, end) << endl;
 }
 
 void test_neon_tile() {
-    constexpr int loop = 100, size = 512;
-    constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 32, Tj_start = 32, Tk_start = 32;
-    constexpr int Ti_end = size, Tj_end = size, Tk_end = size;
-    constexpr int Ti_step = 32, Tj_step = 32, Tk_step = 32;
+    int loop = 100, size = 512;
+    int m = size, p = size, n = size;
+    int Ti_start = 32, Tj_start = 32, Tk_start = 32;
+    int Ti_end = size, Tj_end = size, Tk_end = size;
+    int Ti_step = 32, Tj_step = 32, Tk_step = 32;
 
     OS << "Neon + Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -193,7 +226,7 @@ void test_neon_tile() {
 }
 
 void test_neon_f32() {
-    constexpr int loop = 100, m = 1024, p = 512, n = 16;
+    int loop = 100, m = 1024, p = 512, n = 16;
     OS << "Neon test fp32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<float> A(m, p), B(p, n), C(m, n), Ans(m, n);
@@ -212,7 +245,7 @@ void test_neon_f32() {
 }
 
 void test_neon_s32() {
-    constexpr int loop = 100, m = 1024, p = 512, n = 512;
+    int loop = 100, m = 1024, p = 512, n = 512;
     OS << "Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
 
@@ -252,7 +285,7 @@ void test_neon_s32() {
 }
 
 void test_cal_correct() {
-    constexpr int loop = 10, size = 1024, Tsize = 64;
+    int loop = 10, size = 1024, Tsize = 64;
     OS << "Precise tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size), D(size), E(size);
     rand_mat_1D_s32(A, RAND_SEED1);
@@ -277,7 +310,7 @@ void test_cal_correct() {
 void test_tile_reg(double &reg, double &no_reg) {
     // 结果：几乎无区别
     cout << "Tiling & register test:" << endl;
-    constexpr int loop = 1000, size = 4096, Tsize = 64;
+    int loop = 1000, size = 4096, Tsize = 64;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D_s32(A, RAND_SEED1);
     rand_mat_1D_s32(B, RAND_SEED2);
@@ -302,7 +335,7 @@ void test_tile_reg(double &reg, double &no_reg) {
 }
 
 void test_tile() {
-    constexpr int loop = 10, size = 1024;
+    int loop = 10, size = 1024;
     OS << "Tiling test: Loop-" << loop << ", Size-" << size << endl;
     Mat_1D<int> A(size), B(size), C(size);
     rand_mat_1D_s32(A, RAND_SEED1);
@@ -350,7 +383,7 @@ void test_tile() {
 }
 
 void test_mat_access_speed() {
-    constexpr int loop = 100, size = 4096;
+    int loop = 100, size = 4096;
     Mat_1D<int> A(size);
     Mat_2C<int> B(size);
     cout << "Access speed test: " << endl;
@@ -394,7 +427,7 @@ void test_mat_access_speed() {
 }
 
 void test_reg_restrict() {
-    constexpr int size = 1024, loop = 10;
+    int size = 1024, loop = 10;
     cout << "register/restrict test:" << endl;
 
     Mat_1D<int> A1(size), B1(size), C1(size);

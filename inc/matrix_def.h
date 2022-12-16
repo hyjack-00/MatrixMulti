@@ -2,14 +2,6 @@
 #include <iostream>
 #include <stdint.h>
 
-// # MATRIX SIZES
-//  Square Matrix
-#define N 1024
-#define N6 64
-#define N8 256
-#define N10 1024
-#define N12 4096
-
 // # MATRIX DEFINITION
 //  General Matrix
 

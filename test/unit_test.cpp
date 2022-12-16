@@ -114,7 +114,7 @@ void test_paral() {
 }
 
 void test_neon_tile() {
-    constexpr int loop = 5, size = 512;
+    constexpr int loop = 100, size = 512;
     constexpr int m = size, p = size, n = size;
     constexpr int Ti_start = 64, Tj_start = 64, Tk_start = 64;
     constexpr int Ti_end = size, Tj_end = size, Tk_end = size;

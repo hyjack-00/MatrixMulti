@@ -5,7 +5,7 @@
 #ifdef __ARM_NEON
 #include <arm_neon.h>
 #else 
-typedef float32_t float;
+typedef float float32_t;
 #endif
 
 // Basic NEON 

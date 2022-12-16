@@ -27,6 +27,6 @@ void mm_pthread_4c(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_mm func_mm) {
     pthread_t *threads;
     threads = new pthread_t[thread_num];
     
-    pthread_create
+    // pthread_create
 }
 

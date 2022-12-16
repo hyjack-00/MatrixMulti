@@ -116,9 +116,9 @@ void test_paral() {
 void test_neon_tile() {
     constexpr int loop = 100, size = 512;
     constexpr int m = size, p = size, n = size;
-    constexpr int Ti_start = 64, Tj_start = 64, Tk_start = 64;
+    constexpr int Ti_start = 32, Tj_start = 32, Tk_start = 32;
     constexpr int Ti_end = size, Tj_end = size, Tk_end = size;
-    constexpr int Ti_step = 64, Tj_step = 64, Tk_step = 64;
+    constexpr int Ti_step = 32, Tj_step = 32, Tk_step = 32;
 
     OS << "Neon + Tile test f32: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -137,26 +137,10 @@ void test_neon_tile() {
     for (int x = 1; x <= 40; x ++) q.push(Rec_tile(0, 0, 0, 10000));  // 选取时间最少的前40
 
     OS << "  Ti   Tj   Tk   Time" << endl;
-    for (int Ti = Ti_start; Ti <= Ti_end; Ti += Ti_step) {
+    for (int Tk = Tk_start; Tk <= Tk_end; Tk += Tk_step) {
         for (int Tj = Tj_start; Tj <= Tj_end; Tj += Tj_step) {
-            // k 不分块
-                // OS << setw(4) << Ti << " " << setw(4) << Tj << "    0   ";
-                // auto start = Now;
-                // for (int l = 0; l < loop; l ++) {
-                //     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);
-                // }
-                // auto end = Now;
-                // double dur = Dur(start, end);
-                // OS << setprecision(12) << dur;
-                // if (dur < q.top().time) {  // 进入前40
-                //     q.pop();
-                //     q.push(Rec_tile(Ti, Tj, 0, dur));
-                //     OS << " recorded";
-                // }
-                // OS << endl;
-
             // k 分块
-            for (int Tk = Tk_start; Tk <= Tk_end; Tk += Tk_step) {
+            for (int Ti = Ti_start; Ti <= Ti_end; Ti += Ti_step) {
                 OS << setw(4) << Ti << " " << setw(4) << Tj << " " << setw(4) << Tk << "   ";
                 auto start = Now;
                 for (int l = 0; l < loop; l ++) {
@@ -172,6 +156,22 @@ void test_neon_tile() {
                 }
                 OS << endl;
             }
+            
+            // k 不分块
+                // OS << setw(4) << Ti << " " << setw(4) << Tj << "    0   ";
+                // auto start = Now;
+                // for (int l = 0; l < loop; l ++) {
+                //     mm_1G_f32_vec_tile_noK(A.data, B.data, C.data, m, p, n, Ti, Tj);
+                // }
+                // auto end = Now;
+                // double dur = Dur(start, end);
+                // OS << setprecision(12) << dur;
+                // if (dur < q.top().time) {  // 进入前40
+                //     q.pop();
+                //     q.push(Rec_tile(Ti, Tj, 0, dur));
+                //     OS << " recorded";
+                // }
+                // OS << endl;
         }
     }
     auto start0 = Now;

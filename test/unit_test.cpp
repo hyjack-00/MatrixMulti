@@ -123,9 +123,9 @@ void test_paral() {
     memset(Ans.data, 0, sizeof(int)*m*n);
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    mm_G_pthread_4t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     if (C == Ans) OS << "Correct" << endl;
-    else OS << "Wrong" << endl;
+    else          OS << "Wrong" << endl;
 
     auto start = Now;
     for (int l = 0; l < loop; l ++) 
@@ -133,11 +133,11 @@ void test_paral() {
     auto end = Now;
     OS << "benchmark: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
-    end = Now;
-    OS << "fake parallel: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    // end = Now;
+    // OS << "fake parallel: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 

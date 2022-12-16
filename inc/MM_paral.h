@@ -2,6 +2,7 @@
 
 //# pthreads
 #include <pthread.h>
+#include <iostream>
 
 // mm_kernels
 void * pthr_G_kernel_benchmark_s32(void * arg_p);
@@ -40,7 +41,7 @@ void mm_G_pthread_4t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_mm func_mm) 
     args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0, m,  n,  p);
     
     for (int t = 0; t < 4; t ++)
-        pthread_create(&threads[t], NULL, func_mm, &args[t]);
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
     for (int t = 0; t < 4; t ++)
         pthread_join(threads[t], NULL);
     
@@ -65,7 +66,7 @@ void mm_G_pthread_fake(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_mm func_mm
      args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0, m2, n,  p);
      args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0, m,  n,  p);
     
-    pthread_create(&threads[0], NULL, func_mm, &args[0]);
+    pthread_create(&threads[0], NULL, func_mm, args[0]);
     pthread_join(threads[0], NULL);
     
     for (int t = 0; t < 4; t ++) 

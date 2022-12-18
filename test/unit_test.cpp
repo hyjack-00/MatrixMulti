@@ -112,7 +112,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_paral() {
-    int loop = 10, size = 512;
+    int loop = 10, size = 1024;
     int m = size, p = size, n = size;
     OS << "Paral test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;

@@ -112,7 +112,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_paral() {
-    int loop = 10, size = 1024;
+    int loop = 10, size = 512;
     int m = size, p = size, n = size;
     OS << "Paral test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -155,11 +155,11 @@ void test_paral() {
     end = Now;
     OS << "parallel-4-22chess: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_1t_3t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
-    end = Now;
-    OS << "parallel-4=main+3: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_1t_3t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    // end = Now;
+    // OS << "parallel-4=main+3: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 

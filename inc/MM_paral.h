@@ -257,18 +257,18 @@ void mm_G_pthread_8t_81split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t fu
     threads = new pthread_t[8];
 
     int m = A.height, p = B.height, n = B.width;
-    int m1 = m/8, m2 = m/4, m4 = m/8;
+    int m1 = m/8, m2 = m/4, m3 = m1+m2, m4 = m/2;
     T *a = A.data, *b = B.data, *c = C.data;
 
     Arg_G<T> *args[8];
     args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m1, n,  p);
     args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0,  m2, n,  p);
-    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m2+m1, n,  p);
-    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2+m1, 0,  0,  m4, n,  p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m3, n,  p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m3, 0,  0,  m4, n,  p);
     args[4] = new Arg_G<T>(a, b, c, m, p, n, m4, 0,  0,  m4+m1, n,  p);
     args[5] = new Arg_G<T>(a, b, c, m, p, n, m4+m1, 0,  0,  m4+m2, n,  p);
-    args[6] = new Arg_G<T>(a, b, c, m, p, n, m4+m2, 0,  0,  m-m1,  n,  p);
-    args[7] = new Arg_G<T>(a, b, c, m, p, n, m-m1,  0,  0,  m,  n,  p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, m4+m2, 0,  0,  m4+m3, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m4+m3, 0,  0,  m,  n,  p);
     
     for (int t = 0; t < 8; t ++)
         pthread_create(&threads[t], NULL, func_mm, args[t]);

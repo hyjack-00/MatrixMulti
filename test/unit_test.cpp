@@ -123,7 +123,7 @@ void test_paral() {
     memset(Ans.data, 0, sizeof(int)*m*n);
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_4t_14split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    mm_G_pthread_8t_81split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong" << endl;
 
@@ -190,6 +190,12 @@ void test_paral() {
         mm_G_pthread_8t_24chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     end = Now;
     OS << "parallel-8-24chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_81split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-8-81split: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 

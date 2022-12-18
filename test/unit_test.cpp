@@ -61,7 +61,7 @@ void show_mat_1G(Mat_1G<T> &M) {
 #define RAND_SEED1 20221124
 #define RAND_SEED2 20221123
 #define RAND_UB 10  // [LB, UB)
-#define RAND_LB -10
+#define RAND_LB 0
 void rand_mat_1D_s32(Mat_1D<int> &M, unsigned int seed);
 void rand_mat_2C_s32(Mat_2C<int> &M, unsigned int seed);
 void rand_mat_1G_s32(Mat_1G<int> &M, unsigned int seed);
@@ -112,7 +112,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_paral() {
-    int loop = 5, size = 1024;
+    int loop = 10, size = 1024;
     int m = size, p = size, n = size;
     OS << "Paral test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -123,27 +123,79 @@ void test_paral() {
     memset(Ans.data, 0, sizeof(int)*m*n);
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_4t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    mm_G_pthread_4t_14split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong" << endl;
 
-    auto start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_1G_benchmark(A.data, B.data, C.data, m, p, n);
-    auto end = Now;
-    OS << "benchmark: " << Dur(start, end) << endl;
+    // int b = 0, e = 32;  // [b,e]
+    // cin >> b >> e;
+    // for (int i = b; i <= e; i ++)
+    //     cout << Ans.data[i] << ' ';
+    // cout << endl;
+    // for (int i = b; i <= e; i ++)
+    //     cout << C.data[i] << ' ';
+    // cout << endl;
 
+    auto start = Now, end = Now;
     // start = Now;
     // for (int l = 0; l < loop; l ++) 
-    //     mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    //     mm_1G_benchmark(A.data, B.data, C.data, m, p, n);
     // end = Now;
-    // OS << "fake parallel: " << Dur(start, end) << endl;
+    // OS << "benchmark: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+        mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     end = Now;
-    OS << "parallel: " << Dur(start, end) << endl;
+    OS << "parallel-1 (benchmark): " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_22chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-4-22chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_1t_3t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-4=main+3: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-4-41split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_14split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-4-14split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_2stage<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-8-2stage: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_42chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-8-42chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_24chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-8-24chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_16t_44chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-16-44chess: " << Dur(start, end) << endl;
 }
 
 void test_neon_tile() {

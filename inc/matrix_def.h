@@ -26,12 +26,18 @@ struct Mat_1G<int> {
     ~Mat_1G() { delete[] data; }
 
     bool operator==(const Mat_1G<int> &M) {
-        if (width != M.width || height != M.height) 
+        if (width != M.width || height != M.height) {
+            std::cout << "Wrong matrix size." << std::endl;
             return false;
-        for (int i = 0; i < width * height; i++)
-            if (data[i] != M.data[i])
-                return false;
-        return true;
+        }
+        bool flag = true;
+        for (int i = 0; i < width * height; i++) {
+            if (data[i] != M.data[i]) {
+                std::cout << "Wrong data: " << i << " - <" << i/width << "," << i%width << "> " << std::endl;
+                flag = false;
+            }
+        }
+        return flag;
     }
 };
 template <>
@@ -216,3 +222,4 @@ void mm_2C_benchmark(T **A, T **B, T **C, int size)
         }
     }
 }
+

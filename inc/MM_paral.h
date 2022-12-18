@@ -121,7 +121,7 @@ void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm
     for (int t = 0; t < 3; t ++)
         pthread_create(&threads[t], NULL, func_mm, args[t]);
 
-    func_mm(args[3]);
+    // func_mm(args[3]);
 
     for (int t = 0; t < 4; t ++)
         pthread_join(threads[t], NULL);

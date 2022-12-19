@@ -123,7 +123,7 @@ void test_paral() {
     memset(Ans.data, 0, sizeof(int)*m*n);
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_8t_81split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    mm_G_pthread_8t_4mutex<int>(A, B, C, pthr_G_kernel_benchmark_4mutex_s32);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong" << endl;
 
@@ -163,6 +163,12 @@ void test_paral() {
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_3t<int>(A, B, C, pthr_G_kernel_benchmark_s32);
+    end = Now;
+    OS << "parallel-3-31split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
         mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     end = Now;
     OS << "parallel-4-41split: " << Dur(start, end) << endl;
@@ -178,6 +184,12 @@ void test_paral() {
         mm_G_pthread_8t_2stage<int>(A, B, C, pthr_G_kernel_benchmark_s32);
     end = Now;
     OS << "parallel-8-2stage: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_4mutex<int>(A, B, C, pthr_G_kernel_benchmark_4mutex_s32);
+    end = Now;
+    OS << "parallel-8-4mutex: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 

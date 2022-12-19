@@ -6,6 +6,7 @@
 
 // mm_kernels
 void * pthr_G_kernel_benchmark_s32(void * arg_p);
+void * pthr_G_kernel_benchmark_4mutex_s32(void * arg_p);
 void * pthr_G_kernel_neon_s32(void * arg_p);
 void * pthr_G_kernel_neon_f32(void * arg_p);
 
@@ -155,6 +156,32 @@ void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm
     delete[] threads;
 }
 
+// 3 threads, 31 spluit on M
+template <typename T>
+void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[3];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/3, m2 = m1*2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[3];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0, m2, n,  p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m,  n,  p);
+    
+    for (int t = 0; t < 3; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+
+    for (int t = 0; t < 3; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 3; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
 // 8 threads, 2-2 chessboard on MN + 2 stage on P
 template <typename T>
 void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
@@ -185,6 +212,43 @@ void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t fun
     for (int t = 4; t < 8; t ++)
         pthread_join(threads[t], NULL);
     
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 2-2 chessboard on MN + 4 mutex
+extern pthread_mutex_t mtx_8t[4];
+
+template <typename T>
+void mm_G_pthread_8t_4mutex(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, p2 = p/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m2, n2, p2);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m,  n2, p2);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m2, n,  p2);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m,  n,  p2);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  p2, m2, n2, p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  p2, m,  n2, p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, p2, m2, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, p2, m,  n,  p);
+
+    for (int mtx = 0; mtx < 4; mtx ++)
+        pthread_mutex_init(&mtx_8t[mtx], NULL);
+
+    for (int t = 0; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int mtx = 0; mtx < 4; mtx ++) 
+        pthread_mutex_destroy(&mtx_8t[mtx]);
     for (int t = 0; t < 8; t ++) 
         delete args[t];
     delete[] threads;

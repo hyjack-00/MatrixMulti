@@ -1,4 +1,4 @@
-#include "MM_paral.h"
+#include "MM_pthreads.h"
 
 // mm_kernels
 void * pthr_G_kernel_benchmark_s32(void *arg_p) {
@@ -29,7 +29,7 @@ void * pthr_G_kernel_benchmark_s32(void *arg_p) {
     return NULL;
 }
 
-pthread_mutex_t mtx_8t[4];
+pthread_mutex_t mtx_8t[4];  // definition
 
 void * pthr_G_kernel_benchmark_4mutex_s32(void * arg_p) {
     Arg_G<int> *arg = (Arg_G<int> *) arg_p;

@@ -1,7 +1,7 @@
 #include "matrix_def.h"
 #include "MM_tile.h"
 #include "MM_neon.h"
-#include "MM_paral.h"
+#include "MM_pthreads.h"
 
 #include <iostream>
 #include <iomanip>

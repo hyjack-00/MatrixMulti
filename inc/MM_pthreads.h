@@ -218,7 +218,7 @@ void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t fun
 }
 
 // 8 threads, 2-2 chessboard on MN + 4 mutex
-extern pthread_mutex_t mtx_8t[4];
+extern pthread_mutex_t mtx_8t[4];  // definition in MM_pthreads.cpp
 
 template <typename T>
 void mm_G_pthread_8t_4mutex(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {

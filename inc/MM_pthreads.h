@@ -7,6 +7,7 @@
 // mm_kernels
 void * pthr_G_kernel_benchmark_s32(void * arg_p);
 void * pthr_G_kernel_benchmark_4mutex_s32(void * arg_p);
+// void * pthr_G_kernel_benchmark_4mutex_w_s32(void * arg_p);  // 极其慢
 void * pthr_G_kernel_neon_s32(void * arg_p);
 void * pthr_G_kernel_neon_f32(void * arg_p);
 

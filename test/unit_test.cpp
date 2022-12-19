@@ -191,6 +191,12 @@ void test_paral() {
     end = Now;
     OS << "parallel-8-4mutex: " << Dur(start, end) << endl;
 
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_8t_4mutex<int>(A, B, C, pthr_G_kernel_benchmark_4mutex_w_s32);
+    // end = Now;
+    // OS << "parallel-8-4mutex-w: " << Dur(start, end) << endl;
+
     start = Now;
     for (int l = 0; l < loop; l ++) 
         mm_G_pthread_8t_42chess<int>(A, B, C, pthr_G_kernel_benchmark_s32);

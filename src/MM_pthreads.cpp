@@ -88,7 +88,7 @@ void * pthr_G_kernel_benchmark_4mutex_s32(void * arg_p) {
 #ifdef __ARM_NEON
 void * pthr_G_kernel_neon_s32(void * arg_p) {
     Arg_G<int> *arg = (Arg_G<int> *) arg_p;
-    int p = arg->p, n = arg->n;
+    int m = arg->m, p = arg->p, n = arg->n;
     int ib = arg->ibegin, jb = arg->jbegin, kb = arg->kbegin;
     int ie = arg->iend, je = arg->jend, ke = arg->kend;
     

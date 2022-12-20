@@ -98,11 +98,11 @@ int main() {
         // test_tile();
         // test_tile_reg(r, nr);
         // test_cal_correct();
-        test_neon_s32();
+        // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
         // test_pthrd();
-        // test_pthrd_neon(pthr_G_kernel_neon_s32);
+        test_pthrd_neon(pthr_G_kernel_neon_s32);
     }
     cout << "Test end." << endl;
 
@@ -114,7 +114,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_pthrd_neon(Func_t func) {
-    int loop = 5, size = 1024;
+    int loop = 10, size = 1024;
     int m = size, p = size, n = size;
     OS << "Pthreads + Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;

@@ -86,7 +86,7 @@ void * pthr_G_kernel_benchmark_4mutex_s32(void * arg_p) {
 
 
 #ifdef __ARM_NEON
-void * pthr_G_kernel_neon_s32(void *) {
+void * pthr_G_kernel_neon_s32(void * arg_p) {
     Arg_G<int> *arg = (Arg_G<int> *) arg_p;
     int p = arg->p, n = arg->n;
     int ib = arg->ibegin, jb = arg->jbegin, kb = arg->kbegin;
@@ -163,7 +163,7 @@ void * pthr_G_kernel_neon_f32(void *) { return NULL; }
 //# Threads ALlocation
 
 // s32
-template void mm_G_pthread_4t_22chess<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
+template void mm_G_pthread_4t_22chess(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_4t_41split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_fake<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_4t_14split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);

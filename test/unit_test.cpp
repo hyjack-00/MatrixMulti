@@ -105,7 +105,7 @@ int main() {
         // test_pthrd();
         // test_pthrd_neon(pthr_G_kernel_benchmark_s32);
         // test_pthrd_neon(pthr_G_kernel_neon_s32);
-        // test_no_calling();
+        test_no_calling();
     }
     cout << "Test end." << endl;
 
@@ -117,7 +117,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_no_calling() {
-    int loop = 10, size = 1024;
+    int loop = 1, size = 1024;
     int m = size, p = size, n = size;
     OS << "test-no function calling: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;

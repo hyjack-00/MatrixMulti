@@ -5,7 +5,9 @@ void mm_omp_benchmark(Mat_1G<T> &a, Mat_1G<T> &b, Mat_1G<T> &c, int thr_num) {
     T *A = a.data, *B = b.data, *C = c.data;
     int m = a.height, p = a.width, n = b.width;
 
-    #pragma omp parallel for num_threads(thr_num)
+    omp_set_num_threads(thr_num);
+
+    #pragma omp parallel for
     for (int i = 0; i < m; i ++) {
         for (int k = 0; k < p; k ++) {
             T Aik = A[i*p + k];

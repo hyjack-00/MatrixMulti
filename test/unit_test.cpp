@@ -114,7 +114,7 @@ int main() {
 void test_paral() {
     int loop = 10, size = 1024;
     int m = size, p = size, n = size;
-    OS << "Paral test: Loop-" << loop;
+    OS << "Pthreads test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
     rand_mat_1G_s32(A, 1234);

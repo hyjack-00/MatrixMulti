@@ -23,6 +23,7 @@ add_definitions(-std=c++11)
 add_definitions(-Wall -Wextra)
 add_definitions(-O2)
 add_definitions(-funroll-loops)
+add_definitions(-fopenmp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

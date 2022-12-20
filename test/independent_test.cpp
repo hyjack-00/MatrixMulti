@@ -217,7 +217,7 @@ int main() {
     start = Now;
     for (int l = 0; l < loop; l ++) {
         // mm_pthrd(A, B, C);
-        mm_neon_s32(A.data, B.data, C.data, m, p, n)
+        mm_neon_s32(A.data, B.data, C.data, m, p, n);
     }
     end = Now;
     dur = Dur(start, end);

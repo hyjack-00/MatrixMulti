@@ -1,3 +1,9 @@
+#ifndef __ARM_NEON
+#define __ARM_NEON  // For highligh
+#endif
+
+#ifdef __ARM_NEON
+
 #include <iostream>
 #include <arm_neon.h>
 #include <pthread.h>
@@ -28,6 +34,17 @@ void rand_mat_1G_s32(Mat_1G_s32 &M, unsigned int seed) {
     int sz = M.width * M.height;
     for (int i = 0; i < sz; i ++) 
         M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
+}
+
+void mm_benchmark_s32(int *A, int *B, int *C, int m, int p, int n) {
+    for (int i = 0; i < m; i ++) {
+        for (int k = 0; k < p; k ++) {
+            int Aik = A[i*p + k];
+            for (int j = 0; j < n; j ++) {
+                C[i*n + j] += Aik * B[k*n + j];
+            }
+        }
+    }
 }
 
 struct Arg_s32 {
@@ -127,7 +144,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
 }
 
 int main() {
-    int loop = 10, size = 1024;
+    int loop = 50, size = 1024;
     int m = size, p = size, n = size;
     cout << "IndTest: Loop-" << loop
          << ", M-" << m 
@@ -135,6 +152,8 @@ int main() {
          << ", N-" << n << endl;
     Mat_1G_s32 A(m, p), B(p, n), C(m, n);
     auto start = Now, end = Now;
+    auto dur = Dur(start, end);
+
     rand_mat_1G_s32(A, 1234);
     rand_mat_1G_s32(B, 5678);
     memset(C.data, 0, sizeof(int)*m*n);
@@ -144,5 +163,22 @@ int main() {
         mm_pthrd(A, B, C);
     }
     end = Now;
-    cout << "Time: " << Dur(start, end) << endl;
+    dur = Dur(start, end);
+    cout << "Optimaized Time: " << dur << endl;
+    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/dur << endl;
+
+    start = Now;
+    for (int l = 0; l < loop/10; l ++) {
+        mm_benchmark_s32(A.data, B.data, C.data, m, p, n);
+    }
+    end = Now;
+    dur = Dur(start, end);
+    cout << "BenchMark Time: " << dur*10 << endl;
+    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/10/dur << endl;
 }
+
+#else
+int main() {
+    return 0;
+}
+#endif 

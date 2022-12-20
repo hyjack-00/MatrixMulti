@@ -176,12 +176,6 @@ void test_pthrd_neon(Func_t func) {
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t_14split<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-4-14split: " << Dur(start, end) << endl;
-
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
         mm_G_pthread_8t_2stage<int>(A, B, C, func);
     end = Now;
     OS << "parallel-8-2stage: " << Dur(start, end) << endl;

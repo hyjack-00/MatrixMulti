@@ -3,4 +3,5 @@
 #include <omp.h>
 #include <iostream>
 
-// void mm_
+template <typename T>
+void mm_omp_benchmark(Mat<T> &A, Mat<T> &B, Mat<T> &C, int thread_num);

@@ -42,8 +42,11 @@ void mm_G_pthread_4t_14split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t fu
 template <typename T>  // main + 3 = 4 threads
 void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
 
-template <typename T>  // 3 threads, 31 spluit on M
+template <typename T>  // 3 threads, 3 split on M
 void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+
+template <typename T>  // 2 threads, 2 split on M
+void mm_G_pthread_2t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
 
 template <typename T>  // 8 threads, 2-2 chessboard on MN + 2 stage on P
 void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);

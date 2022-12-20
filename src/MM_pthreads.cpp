@@ -324,6 +324,31 @@ void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
     delete[] threads;
 }
 
+// 2 threads, 2 split on M
+template <typename T>
+void mm_G_pthread_2t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[2];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[2];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0, m,  n,  p);
+    
+    for (int t = 0; t < 2; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+
+    for (int t = 0; t < 2; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 2; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
 // 8 threads, 2-2 chessboard on MN + 2 stage on P
 template <typename T>
 void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
@@ -530,7 +555,7 @@ template void mm_G_pthread_fake<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, F
 template void mm_G_pthread_4t_14split<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 template void mm_G_pthread_1t_3t<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 template void mm_G_pthread_3t<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
-
+template void mm_G_pthread_2t<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 template void mm_G_pthread_8t_2stage<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 template void mm_G_pthread_8t_4mutex<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 template void mm_G_pthread_8t_42chess<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);

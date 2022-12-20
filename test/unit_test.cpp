@@ -70,7 +70,7 @@ void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
-void test_pthrd_neon();
+void test_pthrd_neon(Func_t func);
 void test_pthrd();
 void test_neon_tile();
 void test_neon_f32();
@@ -102,7 +102,7 @@ int main() {
         // test_neon_f32();
         // test_neon_tile();
         // test_pthrd();
-        test_pthrd_neon();
+        test_pthrd_neon(pthr_G_kernel_neon_s32);
 
     }
     cout << "Test end." << endl;
@@ -114,8 +114,8 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
-void test_pthrd_neon() {
-    int loop = 10, size = 1024;
+void test_pthrd_neon(Func_t func) {
+    int loop = 5, size = 1024;
     int m = size, p = size, n = size;
     OS << "Pthreads + Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
@@ -126,7 +126,7 @@ void test_pthrd_neon() {
     // memset(Ans.data, 0, sizeof(int)*m*n);
     // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     // memset(C.data, 0, sizeof(int)*m*n);
-    // mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
+    // mm_G_pthread_4t_41split<int>(A, B, C, func);
     // if (C == Ans) OS << "Correct" << endl;
     // else          OS << "Wrong" << endl;
 
@@ -140,51 +140,63 @@ void test_pthrd_neon() {
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_fake<int>(A, B, C, func);
     end = Now;
     OS << "parallel-1 (benchmark): " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t_22chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_3t<int>(A, B, C, func);
+    end = Now;
+    OS << "parallel-3-31split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_2t<int>(A, B, C, func);
+    end = Now;
+    OS << "parallel-2-21split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_1t_3t<int>(A, B, C, func);
+    end = Now;
+    OS << "parallel-4=main+3t: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_22chess<int>(A, B, C, func);
     end = Now;
     OS << "parallel-4-22chess: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_4t_41split<int>(A, B, C, func);
     end = Now;
     OS << "parallel-4-41split: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t_14split<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_4t_14split<int>(A, B, C, func);
     end = Now;
     OS << "parallel-4-14split: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_8t_2stage<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_8t_2stage<int>(A, B, C, func);
     end = Now;
     OS << "parallel-8-2stage: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_8t_42chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_8t_42chess<int>(A, B, C, func);
     end = Now;
     OS << "parallel-8-42chess: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_8t_24chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+        mm_G_pthread_16t_44chess<int>(A, B, C, func);
     end = Now;
-    OS << "parallel-8-24chess: " << Dur(start, end) << endl;
-
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_8t_81split<int>(A, B, C, pthr_G_kernel_neon_s32);
-    end = Now;
-    OS << "parallel-8-81split: " << Dur(start, end) << endl;
+    OS << "parallel-16-44chess: " << Dur(start, end) << endl;
 }
 
 

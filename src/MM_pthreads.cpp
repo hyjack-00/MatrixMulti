@@ -1,5 +1,11 @@
 #include "MM_pthreads.h"
 
+#ifdef __ARM_NEON
+#include <arm_neon.h>
+#else 
+typedef float float32_t;
+#endif
+
 //# mm_kernels
 
 void * pthr_G_kernel_benchmark_s32(void *arg_p) {

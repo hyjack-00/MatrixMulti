@@ -70,7 +70,8 @@ void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
-void test_paral();
+void test_pthrd_neon();
+void test_pthrd();
 void test_neon_tile();
 void test_neon_f32();
 void test_neon_s32();
@@ -100,7 +101,9 @@ int main() {
         // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
-        test_paral();
+        // test_pthrd();
+        test_pthrd_neon();
+
     }
     cout << "Test end." << endl;
 
@@ -111,7 +114,75 @@ int main() {
 
 // Test implementation -----------------------------------------------------------
 
-void test_paral() {
+void test_pthrd_neon() {
+    int loop = 10, size = 1024;
+    int m = size, p = size, n = size;
+    OS << "Pthreads+Neon test: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
+    Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
+    rand_mat_1G_s32(A, 1234);
+    rand_mat_1G_s32(B, 5678);
+
+    memset(Ans.data, 0, sizeof(int)*m*n);
+    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    memset(C.data, 0, sizeof(int)*m*n);
+    mm_G_pthread_8t_4mutex<int>(A, B, C, pthr_G_kernel_neon_s32);
+    if (C == Ans) OS << "Correct" << endl;
+    else          OS << "Wrong" << endl;
+
+    auto start = Now, end = Now;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-1 (benchmark): " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_22chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-4-22chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-4-41split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_4t_14split<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-4-14split: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_2stage<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-8-2stage: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_42chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-8-42chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_24chess<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-8-24chess: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_8t_81split<int>(A, B, C, pthr_G_kernel_neon_s32);
+    end = Now;
+    OS << "parallel-8-81split: " << Dur(start, end) << endl;
+}
+
+
+void test_pthrd() {
     int loop = 10, size = 1024;
     int m = size, p = size, n = size;
     OS << "Pthreads test: Loop-" << loop;

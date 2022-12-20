@@ -115,7 +115,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
     args[2] = new Arg_s32(a, b, c, p, n, m2, m3);
     args[3] = new Arg_s32(a, b, c, p, n, m3, m);
 
-    for (int i = 0; t < 4; t ++)
+    for (int t = 0; t < 4; t ++)
         pthread_create(&threads[t], NULL, mm_kernel, args[t]);
     for (int t = 0; t < 4; t ++)
         pthread_join(threads[t], NULL);
@@ -128,7 +128,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
 int main() {
     int loop = 10, size = 1024;
     int m = size, p = size, n = size;
-    cout << "IndTest: Loop-" << loop;
+    cout << "IndTest: Loop-" << loop
          << ", M-" << m 
          << ", P-" << p 
          << ", N-" << n << endl;

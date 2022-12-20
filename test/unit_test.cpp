@@ -137,15 +137,15 @@ void test_no_calling() {
         int32x4_t B0, B1, B2, B3;
         int32x4_t C0, C1, C2, C3;
 
-        for (int i = ib; i < ie; i += 4) {
-            for (int j = jb; j < je; j += 4) {
+        for (int i = 0; i < m; i += 4) {
+            for (int j = 0; j < n; j += 4) {
                 c = i*n + j;
                 C0 = vld1q_s32(C + c);
                 C1 = vld1q_s32(C + c + n);
                 C2 = vld1q_s32(C + c + n*2);
                 C3 = vld1q_s32(C + c + n*3);
 
-                for (int k = kb; k < ke; k += 4) {
+                for (int k = 0; k < p; k += 4) {
                     a = i*p + k;
                     b = k*n + j;
 

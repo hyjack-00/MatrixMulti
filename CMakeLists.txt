@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project(MatrixMulti)
 
 include(CTest)
@@ -6,7 +6,6 @@ enable_testing()
 
 # include headers
 include_directories(./inc)
-
 
 # library
 link_libraries(pthread)
@@ -16,17 +15,16 @@ link_libraries(OpenMP::OpenMP_CXX)
 
 # source files
 aux_source_directory(./src SRCS)
-set(TEST 
-    ./test/unit_test.cpp)
+aux_source_directory(./test TEST)
+# set(TEST ./test/unit_test.cpp)
 
 # executable files
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -g")
+add_compile_options(-O2) 
+add_compile_options(-funroll-loops)
+                     
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 add_executable(MatrixMulti ${SRCS} ${TEST})
-
-add_definitions(-std=c++11)
-add_definitions(-Wall -Wextra)
-add_definitions(-O2)
-add_definitions(-funroll-loops)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

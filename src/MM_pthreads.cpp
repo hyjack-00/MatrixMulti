@@ -519,7 +519,7 @@ void mm_G_pthread_16t_44chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t f
 }
 
 // s32
-template void mm_G_pthread_4t_22chess(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
+template <> void mm_G_pthread_4t_22chess(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_4t_41split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_fake<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
 template void mm_G_pthread_4t_14split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);

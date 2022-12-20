@@ -101,8 +101,8 @@ int main() {
         // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
-        // test_pthrd();
-        test_pthrd_neon();
+        test_pthrd();
+        // test_pthrd_neon();
 
     }
     cout << "Test end." << endl;

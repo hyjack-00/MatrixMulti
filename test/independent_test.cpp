@@ -165,7 +165,7 @@ int main() {
     end = Now;
     dur = Dur(start, end);
     cout << "Optimaized Time: " << dur << endl;
-    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/dur << endl;
+    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
     start = Now;
     for (int l = 0; l < loop/10; l ++) {
@@ -174,7 +174,7 @@ int main() {
     end = Now;
     dur = Dur(start, end);
     cout << "BenchMark Time: " << dur*10 << endl;
-    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/10/dur << endl;
+    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/10/dur/1e9 << endl;
 }
 
 #else

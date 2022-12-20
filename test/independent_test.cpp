@@ -15,7 +15,7 @@ struct Mat_1G_s32 {
     int32_t height, width;
     int32_t *data;
 
-    Mat_1G_s32(int h=0, int w=0) : width(w), height(h) {
+    Mat_1G_s32(int h=0, int w=0) : height(h), width(w) {
         data = new int[w * h];
     }
     ~Mat_1G_s32() { delete[] data; }
@@ -99,6 +99,7 @@ void * mm_kernel(void * arg_p) {
             vst1q_s32(C + c + n*3, C3);
         }
     } 
+    return NULL;
 }
 
 void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {

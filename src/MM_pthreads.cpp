@@ -519,16 +519,16 @@ void mm_G_pthread_16t_44chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t f
 }
 
 // s32
-template <> void mm_G_pthread_4t_22chess(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_4t_41split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_fake<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_4t_14split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_1t_3t<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_3t<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
+template void mm_G_pthread_4t_22chess<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_4t_41split<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_fake<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_4t_14split<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_1t_3t<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_3t<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
 
-template void mm_G_pthread_8t_2stage<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_8t_4mutex<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_8t_42chess<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_8t_24chess<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_8t_81split<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
-template void mm_G_pthread_16t_44chess<int>(Mat_1G<int>, Mat_1G<int>, Mat_1G<int>, Func_t);
+template void mm_G_pthread_8t_2stage<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_8t_4mutex<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_8t_42chess<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_8t_24chess<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_8t_81split<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);
+template void mm_G_pthread_16t_44chess<int>(Mat_1G<int>&, Mat_1G<int>&, Mat_1G<int>&, Func_t);

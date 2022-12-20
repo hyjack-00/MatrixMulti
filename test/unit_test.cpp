@@ -215,7 +215,7 @@ void test_pthrd_neon(Func_t func) {
     rand_mat_1G_s32(A, RAND_SEED1);
     rand_mat_1G_s32(B, RAND_SEED2);
 
-    // Mat_1G<int> Ans(m, n);
+    Mat_1G<int> Ans(m, n);
     // memset(Ans.data, 0, sizeof(int)*m*n);
     // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     // memset(C.data, 0, sizeof(int)*m*n);
@@ -279,11 +279,11 @@ void test_pthrd_neon(Func_t func) {
     // end = Now;
     // OS << "parallel-8-42chess: " << Dur(start, end) << endl;
 
-    // start = Now;
-    // for (int l = 0; l < loop; l ++) 
-    //     mm_G_pthread_16t_44chess<int>(A, B, C, func);
-    // end = Now;
-    // OS << "parallel-16-44chess: " << Dur(start, end) << endl;
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_G_pthread_16t_44chess<int>(A, B, C, func);
+    end = Now;
+    OS << "parallel-16-44chess: " << Dur(start, end) << endl;
 }
 
 

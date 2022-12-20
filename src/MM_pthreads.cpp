@@ -163,7 +163,7 @@ void * pthr_G_kernel_neon_f32(void *) { return NULL; }
 
 //# Threads ALlocation
 
-// 4 Threads, ChessBoard on MN
+// 4 threads, ChessBoard on MN
 template <typename T>
 void mm_G_pthread_4t_22chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
     pthread_t *threads;
@@ -189,7 +189,7 @@ void mm_G_pthread_4t_22chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t fu
     delete[] threads;
 }
 
-// 4 Threads, Split 4 on M
+// 4 threads, 4 split on M
 template <typename T>
 void mm_G_pthread_4t_41split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
     pthread_t *threads;
@@ -239,7 +239,7 @@ void mm_G_pthread_fake(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm)
     delete[] threads;
 }
 
-// 4 Threads, Split 4 on N
+// 4 threads, 4 split on N
 template <typename T>
 void mm_G_pthread_4t_14split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
     pthread_t *threads;
@@ -294,7 +294,7 @@ void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm
     delete[] threads;
 }
 
-// 3 threads, 31 spluit on M
+// 3 threads, 3 split on M
 template <typename T>
 void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
     pthread_t *threads;

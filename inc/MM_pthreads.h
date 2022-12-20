@@ -25,7 +25,7 @@ struct Arg_G {  // 通用的参数传递对象，之后确定最佳并行算法�
         A(a),B(b),C(c),m(m_),p(p_),n(n_),ibegin(ib),jbegin(jb),kbegin(kb),iend(ie),jend(je),kend(ke) {}
 };
 
-// Threads Allocation
+// Threads Allocation - Arg_G
 
 template <typename T>  // 4 Threads, ChessBoard on MN
 void mm_G_pthread_4t_22chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);

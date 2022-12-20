@@ -101,8 +101,8 @@ int main() {
         // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
-        test_pthrd();
-        // test_pthrd_neon();
+        // test_pthrd();
+        test_pthrd_neon();
 
     }
     cout << "Test end." << endl;
@@ -126,7 +126,7 @@ void test_pthrd_neon() {
     memset(Ans.data, 0, sizeof(int)*m*n);
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_fake<int>(A, B, C, pthr_G_kernel_neon_s32);
+    mm_G_pthread_4t_22chess<int>(A, B, C, pthr_G_kernel_neon_s32);
     if (C == Ans) OS << "Correct" << endl;
     else          OS << "Wrong" << endl;
 

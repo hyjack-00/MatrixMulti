@@ -70,6 +70,7 @@ void rand_mat_1G_f64(Mat_1G<double> &M, unsigned int seed);
 
 // Unit test -----------------------------------------------------------
 
+void test_no_calling();
 void test_pthrd_neon(Func_t func);
 void test_pthrd();
 void test_neon_tile();
@@ -80,25 +81,6 @@ void test_tile_reg(double &reg, double &no_reg);
 void test_tile();
 void test_reg_restrict();
 void test_mat_access_speed();
-
-void test_no_calling() {
-    int loop = 10, size = 1024;
-    int m = size, p = size, n = size;
-    OS << "test-no function calling: Loop-" << loop;
-    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
-    Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
-    rand_mat_1G_s32(A, 1234);
-    rand_mat_1G_s32(B, 5678);
-
-    auto start = Now, end = Now;
-
-    start = Now;
-    for (int l = 0; l < loop; l ++) {
-
-    }
-    end = Now;
-    OS << "neon: " << Dur(start, end) << endl;
-}
 
 int main() {
     cout << "Test begin." << endl;
@@ -121,8 +103,9 @@ int main() {
         // test_neon_f32();
         // test_neon_tile();
         // test_pthrd();
-        test_pthrd_neon(pthr_G_kernel_benchmark_s32);
-        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        // test_pthrd_neon(pthr_G_kernel_benchmark_s32);
+        // test_pthrd_neon(pthr_G_kernel_neon_s32);
+        test_no_calling();
     }
     cout << "Test end." << endl;
 
@@ -132,6 +115,96 @@ int main() {
 }
 
 // Test implementation -----------------------------------------------------------
+
+void test_no_calling() {
+    int loop = 10, size = 1024;
+    int m = size, p = size, n = size;
+    OS << "test-no function calling: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
+    Mat_1G<int> Am(m, p), Bm(p, n), Cm(m, n);
+    rand_mat_1G_s32(Am, RAND_SEED1);
+    rand_mat_1G_s32(Bm, RAND_SEED2);
+
+    auto start = Now, end = Now;
+
+    int32_t *A = Am.data, *B = Bm.data, *C = Cm.data;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) {
+        #ifdef __ARM_NEON
+        int32_t a, b, c;
+        int32x4_t A0, A1, A2, A3;
+        int32x4_t B0, B1, B2, B3;
+        int32x4_t C0, C1, C2, C3;
+
+        for (int i = ib; i < ie; i += 4) {
+            for (int j = jb; j < je; j += 4) {
+                c = i*n + j;
+                C0 = vld1q_s32(C + c);
+                C1 = vld1q_s32(C + c + n);
+                C2 = vld1q_s32(C + c + n*2);
+                C3 = vld1q_s32(C + c + n*3);
+
+                for (int k = kb; k < ke; k += 4) {
+                    a = i*p + k;
+                    b = k*n + j;
+
+                    B0 = vld1q_s32(B + b);
+                    B1 = vld1q_s32(B + b + n);
+                    B2 = vld1q_s32(B + b + n*2);
+                    B3 = vld1q_s32(B + b + n*3);
+
+                    A0 = vld1q_s32(A + a);
+                    C0 = vmlaq_laneq_s32(C0, B0, A0, 0);
+                    C0 = vmlaq_laneq_s32(C0, B1, A0, 1);
+                    C0 = vmlaq_laneq_s32(C0, B2, A0, 2);
+                    C0 = vmlaq_laneq_s32(C0, B3, A0, 3);
+
+                    A1 = vld1q_s32(A + a + p);
+                    C1 = vmlaq_laneq_s32(C1, B0, A1, 0);
+                    C1 = vmlaq_laneq_s32(C1, B1, A1, 1);
+                    C1 = vmlaq_laneq_s32(C1, B2, A1, 2);
+                    C1 = vmlaq_laneq_s32(C1, B3, A1, 3);
+
+                    A2 = vld1q_s32(A + a + p*2);
+                    C2 = vmlaq_laneq_s32(C2, B0, A2, 0);
+                    C2 = vmlaq_laneq_s32(C2, B1, A2, 1);
+                    C2 = vmlaq_laneq_s32(C2, B2, A2, 2);
+                    C2 = vmlaq_laneq_s32(C2, B3, A2, 3);
+
+                    A3 = vld1q_s32(A + a + p*3);
+                    C3 = vmlaq_laneq_s32(C3, B0, A3, 0);
+                    C3 = vmlaq_laneq_s32(C3, B1, A3, 1);
+                    C3 = vmlaq_laneq_s32(C3, B2, A3, 2);
+                    C3 = vmlaq_laneq_s32(C3, B3, A3, 3);
+                }
+                vst1q_s32(C + c, C0);
+                vst1q_s32(C + c + n, C1);
+                vst1q_s32(C + c + n*2, C2);
+                vst1q_s32(C + c + n*3, C3);
+            }
+        }
+        #else
+        OS << "No NEON" << endl;
+        #endif
+    }
+    end = Now;
+    OS << "neon: " << Dur(start, end) << endl;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) {
+        for (int i = 0; i < m; i ++) {
+            for (int k = 0; k < p; k ++) {
+                int Aik = A[i*p + k];
+                for (int j = 0; j < n; j ++) {
+                    C[i*n + j] += Aik * B[k*n + j];
+                }
+            }
+        }
+    }
+    end = Now;
+    OS << "benchmark: " << Dur(start, end) << endl;
+}
 
 void test_pthrd_neon(Func_t func) {
     int loop = 5, size = 1024;

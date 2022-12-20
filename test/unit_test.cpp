@@ -134,7 +134,7 @@ int main() {
 // Test implementation -----------------------------------------------------------
 
 void test_pthrd_neon(Func_t func) {
-    int loop = 10, size = 1024;
+    int loop = 5, size = 1024;
     int m = size, p = size, n = size;
     OS << "Pthreads + Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;

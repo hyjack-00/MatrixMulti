@@ -91,7 +91,8 @@ void * pthr_G_kernel_neon_s32(void * arg_p) {
     int p = arg->p, n = arg->n;
     int ib = arg->ibegin, jb = arg->jbegin, kb = arg->kbegin;
     int ie = arg->iend, je = arg->jend, ke = arg->kend;
-    int *A = arg->A, *B = arg->B, *C = arg->C;
+    
+    int32_t *A = arg->A, *B = arg->B, *C = arg->C;
 
     int32_t a, b, c;
     int32x4_t A0, A1, A2, A3;

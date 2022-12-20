@@ -3,4 +3,4 @@
 #include <omp.h>
 #include <iostream>
 
-void mm_
+// void mm_

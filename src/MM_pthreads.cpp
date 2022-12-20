@@ -101,10 +101,10 @@ void * pthr_G_kernel_neon_s32(void *) {
     for (int i = ib; i < ie; i += 4) {
         for (int j = jb; j < je; j += 4) {
             c = i*n + j;
-            C0 = vld1q_f32(C + c);
-            C1 = vld1q_f32(C + c + n);
-            C2 = vld1q_f32(C + c + n*2);
-            C3 = vld1q_f32(C + c + n*3);
+            C0 = vld1q_s32(C + c);
+            C1 = vld1q_s32(C + c + n);
+            C2 = vld1q_s32(C + c + n*2);
+            C3 = vld1q_s32(C + c + n*3);
 
             for (int k = kb; k < ke; k += 4) {
                 a = i*p + k;
@@ -154,7 +154,7 @@ void * pthr_G_kernel_neon_f32(void * arg_p) {
 
 #else
 void * pthr_G_kernel_neon_s32(void *) { return NULL; }
-void * pthr_G_kernel_neon_f32(void * arg_p) { return NULL; }
+void * pthr_G_kernel_neon_f32(void *) { return NULL; }
 
 #endif
 

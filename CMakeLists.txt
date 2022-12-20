@@ -7,8 +7,12 @@ enable_testing()
 # include headers
 include_directories(./inc)
 
+
 # library
 link_libraries(pthread)
+
+find_package(OpenMP REQUIRED)
+link_libraries(OpenMP::OpenMP_CXX)
 
 # source files
 aux_source_directory(./src SRCS)
@@ -23,7 +27,6 @@ add_definitions(-std=c++11)
 add_definitions(-Wall -Wextra)
 add_definitions(-O2)
 add_definitions(-funroll-loops)
-add_definitions(-fopenmp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

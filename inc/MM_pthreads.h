@@ -25,45 +25,388 @@ struct Arg_G {  // 通用的参数传递对象，之后确定最佳并行算法�
         A(a),B(b),C(c),m(m_),p(p_),n(n_),ibegin(ib),jbegin(jb),kbegin(kb),iend(ie),jend(je),kend(ke) {}
 };
 
+
 // Threads Allocation - Arg_G
 
-template <typename T>  // 4 Threads, ChessBoard on MN
-void mm_G_pthread_4t_22chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+// 4 threads, ChessBoard on MN
+template <typename T>
+void mm_G_pthread_4t_22chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[4];
 
-template <typename T>  // 4 Threads, Split 4 on M
-void mm_G_pthread_4t_41split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
 
-template <typename T>  // 测试 pthreads 非计算耗时
-void mm_G_pthread_fake(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    Arg_G<T> *args[4];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m2, n2, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m,  n2, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0, m2, n,  p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0, m,  n,  p);
+    
+    for (int t = 0; t < 4; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 4; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 4; t ++) 
+        delete args[t];
+    delete[] threads;
+}
 
-template <typename T>  // 4 Threads, Split 4 on N
-void mm_G_pthread_4t_14split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+// 4 threads, 4 split on M
+template <typename T>
+void mm_G_pthread_4t_41split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[4];
 
-template <typename T>  // main + 3 = 4 threads
-void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/4, m2 = m/2, m3 = m1+m2;
+    T *a = A.data, *b = B.data, *c = C.data;
 
-template <typename T>  // 3 threads, 3 split on M
-void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    Arg_G<T> *args[4];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0, m2, n,  p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m3, n,  p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m3, 0,  0, m,  n,  p);
+    
+    for (int t = 0; t < 4; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 4; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 4; t ++) 
+        delete args[t];
+    delete[] threads;
+} 
 
-template <typename T>  // 2 threads, 2 split on M
-void mm_G_pthread_2t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+// 测试 pthreads 非计算耗时
+template <typename T>
+void mm_G_pthread_fake(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[1];
 
-template <typename T>  // 8 threads, 2-2 chessboard on MN + 2 stage on P
-void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
 
-extern pthread_mutex_t mtx_8t[4];
+    Arg_G<T> *args[4];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m, n, p);
+        args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m,  n, p);
+        args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0, m2, n,  p);
+        args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0, m,  n,  p);
+    
+    pthread_create(&threads[0], NULL, func_mm, args[0]);
+    pthread_join(threads[0], NULL);
+    
+    for (int t = 0; t < 4; t ++) 
+        delete args[t];
+    delete[] threads;
+}
 
-template <typename T>  // 8 threads, 2-2 chessboard on MN + 4 mutex
-void mm_G_pthread_8t_4mutex(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+// 4 threads, 4 split on N
+template <typename T>
+void mm_G_pthread_4t_14split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[4];
 
-template <typename T>  // 8 threads, 4-2 chessboard on MN
-void mm_G_pthread_8t_42chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    int m = A.height, p = B.height, n = B.width;
+    int n1 = n/4, n2 = n/2, n3 = n1+n2;
+    T *a = A.data, *b = B.data, *c = C.data;
 
-template <typename T>  // 8 threads, 4-2 chessboard on NM
-void mm_G_pthread_8t_24chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    Arg_G<T> *args[4];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m,  n1, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, 0,  n1, 0,  m,  n2, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m,  n3, p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, 0,  n3, 0,  m,  n,  p);
+    
+    for (int t = 0; t < 4; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 4; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 4; t ++) 
+        delete args[t];
+    delete[] threads;
+} 
 
-template <typename T>  // 8 threads, 8 split on M
-void mm_G_pthread_8t_81split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+// main + 3 = 4 threads
+template <typename T>
+void mm_G_pthread_1t_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[3];
 
-template <typename T>  // 16 threads, 4-4 chessboard on MN
-void mm_G_pthread_16t_44chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm);
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[4];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m2, n2, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m,  n2, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0, m2, n,  p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0, m,  n,  p);
+    
+    for (int t = 0; t < 3; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+
+    func_mm(args[3]);
+
+    for (int t = 0; t < 3; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 4; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 3 threads, 3 split on M
+template <typename T>
+void mm_G_pthread_3t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[3];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/3, m2 = m1*2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[3];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0, m2, n,  p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0, m,  n,  p);
+    
+    for (int t = 0; t < 3; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+
+    for (int t = 0; t < 3; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 3; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 2 threads, 2 split on M
+template <typename T>
+void mm_G_pthread_2t(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[2];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[2];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0, m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0, m,  n,  p);
+    
+    for (int t = 0; t < 2; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+
+    for (int t = 0; t < 2; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 2; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 2-2 chessboard on MN + 2 stage on P
+template <typename T>
+void mm_G_pthread_8t_2stage(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, p2 = p/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m2, n2, p2);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m,  n2, p2);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m2, n,  p2);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m,  n,  p2);
+
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  p2, m2, n2, p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  p2, m,  n2, p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, p2, m2, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, p2, m,  n,  p);
+
+    for (int t = 0; t < 4; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 4; t ++)
+        pthread_join(threads[t], NULL);
+    for (int t = 4; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 4; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 2-2 chessboard on MN + 4 mutex
+extern pthread_mutex_t mtx_8t[4];  // defined in MM_pthreads.cpp
+
+template <typename T>
+void mm_G_pthread_8t_4mutex(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m2 = m/2, p2 = p/2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m2, n2, p2);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m,  n2, p2);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m2, n,  p2);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m,  n,  p2);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  p2, m2, n2, p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  p2, m,  n2, p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, p2, m2, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, p2, m,  n,  p);
+
+    for (int mtx = 0; mtx < 4; mtx ++)
+        pthread_mutex_init(&mtx_8t[mtx], NULL);
+
+    for (int t = 0; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int mtx = 0; mtx < 4; mtx ++) 
+        pthread_mutex_destroy(&mtx_8t[mtx]);
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 4-2 chessboard on MN
+template <typename T>
+void mm_G_pthread_8t_42chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/4, m2 = m/2, m3 = m1+m2, n2 = n/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m1, n2, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0,  m2, n2, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m3, n2, p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m3, 0,  0,  m,  n2, p);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m1, n,  p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m1, n2, 0,  m2, n,  p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m3, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m3, n2, 0,  m,  n,  p);
+
+    for (int t = 0; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 4-2 chessboard on NM
+template <typename T>
+void mm_G_pthread_8t_24chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int n1 = n/4, n2 = n/2, n3 = n1+n2, m2 = m/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m2, n1, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, 0,  n1, 0,  m2, n2, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m2, n3, p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, 0,  n3, 0,  m2, n,  p);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m,  n1, p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m2, n1, 0,  m,  n2, p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m,  n3, p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m2, n3, 0,  m,  n,  p);
+
+    for (int t = 0; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+}
+
+// 8 threads, 8 split on M
+template <typename T>
+void mm_G_pthread_8t_81split(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[8];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/8, m2 = m/4, m3 = m1+m2, m4 = m/2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[8];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m1, n,  p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0,  m2, n,  p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m3, n,  p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m3, 0,  0,  m4, n,  p);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, m4, 0,  0,  m4+m1, n,  p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m4+m1, 0,  0,  m4+m2, n,  p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, m4+m2, 0,  0,  m4+m3, n,  p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m4+m3, 0,  0,  m,  n,  p);
+    
+    for (int t = 0; t < 8; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 8; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 8; t ++) 
+        delete args[t];
+    delete[] threads;
+} 
+
+// 16 threads, 4-4 chessboard on MN
+template <typename T>
+void mm_G_pthread_16t_44chess(Mat_1G<T> &A, Mat_1G<T> &B, Mat_1G<T> &C, Func_t func_mm) {
+    pthread_t *threads;
+    threads = new pthread_t[16];
+
+    int m = A.height, p = B.height, n = B.width;
+    int m1 = m/4, m2 = m/2, m3 = m1+m2;
+    int n1 = n/4, n2 = n/2, n3 = n1+n2;
+    T *a = A.data, *b = B.data, *c = C.data;
+
+    Arg_G<T> *args[16];
+    args[0] = new Arg_G<T>(a, b, c, m, p, n, 0,  0,  0,  m1, n1, p);
+    args[1] = new Arg_G<T>(a, b, c, m, p, n, m1, 0,  0,  m2, n1, p);
+    args[2] = new Arg_G<T>(a, b, c, m, p, n, m2, 0,  0,  m3, n1, p);
+    args[3] = new Arg_G<T>(a, b, c, m, p, n, m3, 0,  0,  m,  n1, p);
+    args[4] = new Arg_G<T>(a, b, c, m, p, n, 0,  n1, 0,  m1, n2, p);
+    args[5] = new Arg_G<T>(a, b, c, m, p, n, m1, n1, 0,  m2, n2, p);
+    args[6] = new Arg_G<T>(a, b, c, m, p, n, m2, n1, 0,  m3, n2, p);
+    args[7] = new Arg_G<T>(a, b, c, m, p, n, m3, n1, 0,  m,  n2, p);
+    args[8] = new Arg_G<T>(a, b, c, m, p, n, 0,  n2, 0,  m1, n3, p);
+    args[9] = new Arg_G<T>(a, b, c, m, p, n, m1, n2, 0,  m2, n3, p);
+    args[10]= new Arg_G<T>(a, b, c, m, p, n, m2, n2, 0,  m3, n3, p);
+    args[11]= new Arg_G<T>(a, b, c, m, p, n, m3, n2, 0,  m,  n3, p);
+    args[12]= new Arg_G<T>(a, b, c, m, p, n, 0,  n3, 0,  m1, n,  p);
+    args[13]= new Arg_G<T>(a, b, c, m, p, n, m1, n3, 0,  m2, n,  p);
+    args[14]= new Arg_G<T>(a, b, c, m, p, n, m2, n3, 0,  m3, n,  p);
+    args[15]= new Arg_G<T>(a, b, c, m, p, n, m3, n3, 0,  m,  n,  p);
+
+    for (int t = 0; t < 16; t ++)
+        pthread_create(&threads[t], NULL, func_mm, args[t]);
+    for (int t = 0; t < 16; t ++)
+        pthread_join(threads[t], NULL);
+    
+    for (int t = 0; t < 16; t ++) 
+        delete args[t];
+    delete[] threads;
+}

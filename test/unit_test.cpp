@@ -81,7 +81,24 @@ void test_tile();
 void test_reg_restrict();
 void test_mat_access_speed();
 
-// void test_
+void test_no_calling() {
+    int loop = 10, size = 1024;
+    int m = size, p = size, n = size;
+    OS << "test-no function calling: Loop-" << loop;
+    OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
+    Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
+    rand_mat_1G_s32(A, 1234);
+    rand_mat_1G_s32(B, 5678);
+
+    auto start = Now, end = Now;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) {
+
+    }
+    end = Now;
+    OS << "neon: " << Dur(start, end) << endl;
+}
 
 int main() {
     cout << "Test begin." << endl;
@@ -103,8 +120,9 @@ int main() {
         // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
-        test_pthrd();
-        // test_pthrd_neon(pthr_G_kernel_neon_s32);
+        // test_pthrd();
+        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        test_pthrd_neon(pthr_G_kernel_benchmark_s32);
     }
     cout << "Test end." << endl;
 

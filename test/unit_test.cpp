@@ -81,6 +81,8 @@ void test_tile();
 void test_reg_restrict();
 void test_mat_access_speed();
 
+// void test_
+
 int main() {
     cout << "Test begin." << endl;
     
@@ -101,8 +103,8 @@ int main() {
         // test_neon_s32();
         // test_neon_f32();
         // test_neon_tile();
-        // test_pthrd();
-        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        test_pthrd();
+        // test_pthrd_neon(pthr_G_kernel_neon_s32);
     }
     cout << "Test end." << endl;
 

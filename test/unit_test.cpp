@@ -33,7 +33,7 @@ string ouput_file = "output/output1.txt";
     auto end = Now;
     cout << Dur(start, end) << endl;
 */
-#define Now std::chrono::system_clock::now()
+#define Now std::chrono::high_resolution_clock::now()
 #define Dur(start,end) static_cast<std::chrono::duration<double>>((end)-(start)).count()
 
 struct Rec_tile {  // 用来记录最优分块
@@ -117,7 +117,7 @@ int main() {
 void test_pthrd_neon() {
     int loop = 10, size = 1024;
     int m = size, p = size, n = size;
-    OS << "Pthreads+Neon test: Loop-" << loop;
+    OS << "Pthreads + Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
     Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
     rand_mat_1G_s32(A, 1234);
@@ -127,8 +127,8 @@ void test_pthrd_neon() {
     mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     memset(C.data, 0, sizeof(int)*m*n);
     mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
-    if (C == Ans) OS << "Correct" << endl;
-    else          OS << "Wrong" << endl;
+    // if (C == Ans) OS << "Correct" << endl;
+    // else          OS << "Wrong" << endl;
 
     auto start = Now, end = Now;
 

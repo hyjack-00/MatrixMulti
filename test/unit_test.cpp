@@ -104,8 +104,8 @@ int main() {
         // test_neon_tile();
         // test_pthrd();
         // test_pthrd_neon(pthr_G_kernel_benchmark_s32);
-        // test_pthrd_neon(pthr_G_kernel_neon_s32);
-        test_no_calling();
+        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        // test_no_calling();
     }
     cout << "Test end." << endl;
 
@@ -211,10 +211,11 @@ void test_pthrd_neon(Func_t func) {
     int m = size, p = size, n = size;
     OS << "Pthreads + Neon test: Loop-" << loop;
     OS << ", M-" << m << ", P-" << p << ", N-" << n << endl;
-    Mat_1G<int> A(m, p), B(p, n), C(m, n), Ans(m, n);
-    rand_mat_1G_s32(A, 1234);
-    rand_mat_1G_s32(B, 5678);
+    Mat_1G<int> A(m, p), B(p, n), C(m, n);
+    rand_mat_1G_s32(A, RAND_SEED1);
+    rand_mat_1G_s32(B, RAND_SEED2);
 
+    // Mat_1G<int> Ans(m, n);
     // memset(Ans.data, 0, sizeof(int)*m*n);
     // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
     // memset(C.data, 0, sizeof(int)*m*n);
@@ -224,11 +225,11 @@ void test_pthrd_neon(Func_t func) {
 
     auto start = Now, end = Now;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_1G_s32_vec(A.data, B.data, C.data, m, p, n);
-    end = Now;
-    OS << "neon: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_1G_s32_vec(A.data, B.data, C.data, m, p, n);
+    // end = Now;
+    // OS << "neon: " << Dur(start, end) << endl;
 
     // start = Now;
     // for (int l = 0; l < loop; l ++) 
@@ -236,29 +237,29 @@ void test_pthrd_neon(Func_t func) {
     // end = Now;
     // OS << "parallel-1 (benchmark): " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_3t<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-3-31split: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_3t<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-3-31split: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_2t<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-2-21split: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_2t<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-2-21split: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_1t_3t<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-4=main+3t: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_1t_3t<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-4=main+3t: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_4t_22chess<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-4-22chess: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_4t_22chess<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-4-22chess: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 
@@ -272,17 +273,17 @@ void test_pthrd_neon(Func_t func) {
     end = Now;
     OS << "parallel-8-2stage: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_8t_42chess<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-8-42chess: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_8t_42chess<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-8-42chess: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_16t_44chess<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-16-44chess: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_16t_44chess<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-16-44chess: " << Dur(start, end) << endl;
 }
 
 

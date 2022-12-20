@@ -103,8 +103,8 @@ int main() {
         // test_neon_f32();
         // test_neon_tile();
         // test_pthrd();
-        test_pthrd_neon(pthr_G_kernel_benchmark_s32);
-        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        // test_pthrd_neon(pthr_G_kernel_benchmark_s32);
+        // test_pthrd_neon(pthr_G_kernel_neon_s32);
         // test_no_calling();
     }
     cout << "Test end." << endl;
@@ -279,11 +279,11 @@ void test_pthrd_neon(Func_t func) {
     // end = Now;
     // OS << "parallel-8-42chess: " << Dur(start, end) << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) 
-        mm_G_pthread_16t_44chess<int>(A, B, C, func);
-    end = Now;
-    OS << "parallel-16-44chess: " << Dur(start, end) << endl;
+    // start = Now;
+    // for (int l = 0; l < loop; l ++) 
+    //     mm_G_pthread_16t_44chess<int>(A, B, C, func);
+    // end = Now;
+    // OS << "parallel-16-44chess: " << Dur(start, end) << endl;
 }
 
 

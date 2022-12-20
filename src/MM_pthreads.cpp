@@ -145,11 +145,12 @@ void * pthr_G_kernel_neon_s32(void * arg_p) {
             vst1q_s32(C + c + n*2, C2);
             vst1q_s32(C + c + n*3, C3);
         }
-    } 
+    }
+    return NULL;
 }
 
-void * pthr_G_kernel_neon_f32(void * arg_p) {
-
+void * pthr_G_kernel_neon_f32(void *) {
+    return NULL;
 }
 
 #else

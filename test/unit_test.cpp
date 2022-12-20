@@ -123,14 +123,20 @@ void test_pthrd_neon() {
     rand_mat_1G_s32(A, 1234);
     rand_mat_1G_s32(B, 5678);
 
-    memset(Ans.data, 0, sizeof(int)*m*n);
-    mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
-    memset(C.data, 0, sizeof(int)*m*n);
-    mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
+    // memset(Ans.data, 0, sizeof(int)*m*n);
+    // mm_1G_benchmark(A.data, B.data, Ans.data, m, p, n);
+    // memset(C.data, 0, sizeof(int)*m*n);
+    // mm_G_pthread_4t_41split<int>(A, B, C, pthr_G_kernel_neon_s32);
     // if (C == Ans) OS << "Correct" << endl;
     // else          OS << "Wrong" << endl;
 
     auto start = Now, end = Now;
+
+    start = Now;
+    for (int l = 0; l < loop; l ++) 
+        mm_1G_s32_vec(A.data, B.data, C.data, m, p, n);
+    end = Now;
+    OS << "neon: " << Dur(start, end) << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) 

@@ -97,53 +97,6 @@ inline void matthr(tp* a, tp* b, tp* c) {
 	return;
 }
 
-//这是错误的！！！！！！！！！
-//template<typename tp>
-//inline void matmul_error(tp* a, tp* b, tp* c) {
-//	pthread_t th[4];
-//	para<int32_t>* arg[4];
-//
-//	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), N);
-//	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, N);
-//	arg[2] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, N);
-//	arg[3] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), N);
-//
-//	for (int i = 0; i < 4; i++) {
-//		if (!pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
-//			printf("Create thread error!\n");
-//			return;
-//		}
-//	}
-//	pthread_exit(NULL);
-//	return;
-//}
-
-//这也是错误的，因为线程之间有数据依赖（往C上加的时候）
-//template<typename tp>
-//inline void matthr_error(tp* a, tp* b, tp* c) {
-//	pthread_t th[8];
-//	para<int32_t>* arg[8];
-//
-//	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), N);
-//	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, N);
-//	arg[2] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, N);
-//	arg[3] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), N);
-//
-//	for (int i = 0; i < 4; i++) {
-//		if (pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
-//			printf("Create thread error!\n");
-//			return;
-//		}
-//	}
-//
-//	pthread_join(th[0], NULL);
-//	pthread_join(th[1], NULL);
-//	pthread_join(th[2], NULL);
-//	pthread_join(th[3], NULL);
-//	return;
-//}
-
-//注意：此处有改：neon中的代码逻辑是将结果算好后直接覆盖，但是并行、tiling要求的是结果算好之后加上去
 inline void* matmul_ne_thr(register void* arg) {
 	//C+=AB;不验证可乘
 	int32_t* A_idx;
@@ -281,13 +234,6 @@ double countTime(void f(tp*, tp*, tp*), tp* a, tp* b, tp* c) {
 	for (int i = 0; i < FOR; ++i) f(a, b, c);
 	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-
-	/*for (int i = 0; i < M; ++i) {
-		for (int j = 0; j < N; ++j) {
-			c[i * M + j] = 0;
-		}
-	}*/
-
 	return time_span.count();
 }
 
@@ -303,7 +249,7 @@ int main() {
 		}
 	}
 
-	for (same = 8; same < 512; same <<= 1) {
+	for (same = 256; same < 2048; same *= 2) {
 		M = N = L = same;
 		cout << same << ":" << endl;
 		cout << countTime(matthr, a_s, b_s, c_s) << endl;

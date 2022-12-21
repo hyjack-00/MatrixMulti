@@ -15,7 +15,7 @@ aux_source_directory(./src SRCS)
 # aux_source_directory(./test TEST)
 set(TEST ./test/unit_test.cpp)
 set(TEST_ID ./test/independent_test.cpp)
-set(TEST_Ye ./test/thr.cpp)
+set(TEST_Ye ./test/ye.cpp)
 
 # executable files   
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

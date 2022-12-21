@@ -207,7 +207,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
 }
 
 int main() {
-    int loop = 100, size = 1024;
+    int loop = 10, size = 1024;
     int m = size, p = size, n = size;
     cout << "IndTest: Loop-" << loop
          << ", M-" << m 

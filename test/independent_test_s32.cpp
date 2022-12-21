@@ -10,6 +10,7 @@
 #include <chrono>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 
 using std::cout;
 using std::endl;
@@ -118,6 +119,9 @@ void * mm_kernel(void * arg_p) {
     int32_t *A = arg->A, *B = arg->B, *C = arg->C;
     int p = arg->p, n = arg->n;
     int ib = arg->ibegin, ie = arg->iend;
+
+    // debug
+    cout << std::to_string(ib) + "-" + std::to_string(ie) << endl;
 
     int32_t a, b, c;
     int32x4_t A0, A1, A2, A3;

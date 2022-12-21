@@ -37,16 +37,16 @@ void rand_mat_1G_s32(Mat_1G_s32 &M, unsigned int seed) {
         M.data[i] = (rand() % (RAND_UB - RAND_LB)) + RAND_LB;
 }
 
-void mm_benchmark_s32(int *A, int *B, int *C, int m, int p, int n) {
-    for (int i = 0; i < m; i ++) {
-        for (int k = 0; k < p; k ++) {
-            int Aik = A[i*p + k];
-            for (int j = 0; j < n; j ++) {
-                C[i*n + j] += Aik * B[k*n + j];
-            }
-        }
-    }
-}
+// void mm_benchmark_s32(int *A, int *B, int *C, int m, int p, int n) {
+//     for (int i = 0; i < m; i ++) {
+//         for (int k = 0; k < p; k ++) {
+//             int Aik = A[i*p + k];
+//             for (int j = 0; j < n; j ++) {
+//                 C[i*n + j] += Aik * B[k*n + j];
+//             }
+//         }
+//     }
+// }
 
 void mm_neon_s32(int *A, int *B, int *C, int m, int p, int n) {
     int32_t a, b, c;
@@ -207,7 +207,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
 }
 
 int main() {
-    int loop = 10, size = 1024;
+    int loop = 20, size = 1024;
     int m = size, p = size, n = size;
     cout << "IndTest: Loop-" << loop
          << ", M-" << m 
@@ -224,7 +224,6 @@ int main() {
     start = Now;
     for (int l = 0; l < loop; l ++) {
         mm_pthrd(A, B, C);
-        // mm_neon_s32(A.data, B.data, C.data, m, p, n);
     }
     end = Now;
     dur = Dur(start, end);
@@ -232,13 +231,13 @@ int main() {
     cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
     start = Now;
-    for (int l = 0; l < loop/10; l ++) {
-        mm_benchmark_s32(A.data, B.data, C.data, m, p, n);
+    for (int l = 0; l < loop; l ++) {
+        mm_neon_s32(A.data, B.data, C.data, m, p, n);
     }
     end = Now;
     dur = Dur(start, end);
-    cout << "BenchMark Time: " << dur*10 << endl;
-    cout << "BenchMark GFLOPS: " << (double)2*m*p*n*loop/10/dur/1e9 << endl;
+    cout << "Neon Time: " << dur << endl;
+    cout << "Neon GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 }
 
 #endif 

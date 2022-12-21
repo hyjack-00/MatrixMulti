@@ -3,7 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
-// #include <ppl.h>
+#include <pthread.h>
 
 #include <stdio.h>
 #include <stdint.h>
@@ -11,72 +11,140 @@
 #include <stdbool.h>
 #include <math.h>
 #include <arm_neon.h>
-using namespace Concurrency;
-using namespace std;
-
 #define MIN(x,y) (x<y?x:y)
 #define MAX(x,y) (x>y?x:y)
-#define FOR 50
-#define MAXN 0xffffff//2^24,所以矩阵规模不要大于2048
+#define FOR 10
+#define MAXN 0xfffff//2^20,所以矩阵规模不要大于1024
 #define __static_assert
 
 int32_t a_s[MAXN] = { 0 };
 int32_t b_s[MAXN] = { 0 };
 int32_t c_s[MAXN] = { 0 };
-//int32_t d_s[MAXN] = { 0 };
-float32_t a_f[MAXN] = { 0 };
-float32_t b_f[MAXN] = { 0 };
-float32_t c_f[MAXN] = { 0 };
+int32_t d_s[MAXN] = { 0 };
+int32_t e_s[MAXN] = { 0 };
+//float32_t a_f[MAXN] = { 0 };
+//float32_t b_f[MAXN] = { 0 };
+//float32_t c_f[MAXN] = { 0 };
 //float32_t d_f[MAXN] = { 0 };
 
 //这里我们不检查是否是4的倍数，所以必须要保证
 // m| l_ * l| n_
-int same = 4;
+int same = 256;
 int N(same), M(same), L(same);
+using namespace std;
 
-
-//这个是没有向量化时的写法。
 template<typename tp>
-inline void matmul(tp* a, tp* b, tp* c) {
+struct para {
+	tp* a, * b, * c;
+	//下标的下界（闭）(k-L,i-M,j-N)
+	int kfrom, ifrom, jfrom;
+	//下标的上界（开）
+	int kto, ito, jto;
+	para(tp* _a, tp* _b, tp* _c, int _kfrom, int  _ifrom, int  _jfrom, int  _kto, int  _ito, int  _jto) :
+		a(_a), b(_b), c(_c), kfrom(_kfrom), ifrom(_ifrom), jfrom(_jfrom), kto(_kto), ito(_ito), jto(_jto) {}
+};
+
+template<typename tp>
+inline void* matmul_th(register void* arg) {
 	register int i, j, k, km, im;
 	register tp tmp;
-	for (k = 0; k != L; ++k) {
+	for (k = ((para<tp>*)arg)->kfrom; k != ((para<tp>*)arg)->kto; ++k) {
 		km = k * M;
-		for (i = 0; i != M; ++i) {
+		for (i = ((para<tp>*)arg)->ifrom; i != ((para<tp>*)arg)->ito; ++i) {
 			im = i * M;
-			tmp = *((tp*)a + im + k);
-			for (j = 0; j != N; ++j) {
-				*((tp*)c + im + j) += *((tp*)b + km + j) * tmp;
+			tmp = *(((para<tp>*)arg)->a + im + k);
+			for (j = ((para<tp>*)arg)->jfrom; j != ((para<tp>*)arg)->jto; ++j) {
+				*(((para<tp>*)arg)->c + im + j) += tmp * *(((para<tp>*)arg)->b + km + j);
 			}
 		}
 	}
 }
 
-//废案。这个是自己写的。
-inline void neon_0_1(int* a, int* b, int* c) {
-	register int32_t i, j, k, tmp;
-	register int32_t* bkm, * cim;
-	int32x4_t B, C, res;
-	for (k = 0; k != L; ++k) {
-		bkm = b + k * M;
-		for (i = 0; i != M; ++i) {
-			cim = c + i * M;
-			tmp = *(a + i * M + k);
-			for (j = 0; j != N; j += 4) {
-				C = vld1q_s32(cim + j);
-				B = vld1q_s32(bkm + j);
-				res = vmlaq_n_s32(C, B, tmp);
-				vst1q_s32(cim + j, res);
-			}
+template<typename tp>
+inline void matthr(tp* a, tp* b, tp* c) {
+	pthread_t th[8];
+	para<int32_t>* arg[8];
+
+	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), (N >> 1));
+	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, (N >> 1));
+	arg[2] = new para<int32_t>(a, b, c, 0, 0, (N >> 1), (L >> 1), (M >> 1), N);
+	arg[3] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), (N >> 1), L, M, N);
+
+	arg[4] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), (N >> 1));
+	arg[5] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, (N >> 1));
+	arg[6] = new para<int32_t>(a, b, c, (L >> 1), 0, (N >> 1), L, (M >> 1), N);
+	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N);
+
+
+	for (int i = 0; i < 4; i++) {
+		if (pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
+			printf("Create thread error!\n");
+			return;
 		}
 	}
+	for (int i = 0; i < 4; i++) {
+		pthread_join(th[i], NULL);
+	}
+	for (int i = 4; i < 8; i++) {
+		if (pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
+			printf("Create thread error!\n");
+			return;
+		}
+	}
+	for (int i = 4; i < 8; i++) {
+		pthread_join(th[i], NULL);
+	}
+	return;
 }
 
-//（int,如果最外层写
-// il = L * i_idx;
-// in = N * i_idx; 
-// 这个方法会在规模较大时变好用）
-inline void neon_s32(int32_t* A, int32_t* B, int32_t* C) {
+//这是错误的！！！！！！！！！
+//template<typename tp>
+//inline void matmul_error(tp* a, tp* b, tp* c) {
+//	pthread_t th[4];
+//	para<int32_t>* arg[4];
+//
+//	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), N);
+//	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, N);
+//	arg[2] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, N);
+//	arg[3] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), N);
+//
+//	for (int i = 0; i < 4; i++) {
+//		if (!pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
+//			printf("Create thread error!\n");
+//			return;
+//		}
+//	}
+//	pthread_exit(NULL);
+//	return;
+//}
+
+//这也是错误的，因为线程之间有数据依赖（往C上加的时候）
+//template<typename tp>
+//inline void matthr_error(tp* a, tp* b, tp* c) {
+//	pthread_t th[8];
+//	para<int32_t>* arg[8];
+//
+//	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), N);
+//	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, N);
+//	arg[2] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, N);
+//	arg[3] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), N);
+//
+//	for (int i = 0; i < 4; i++) {
+//		if (pthread_create(th + i, NULL, matmul_th<int32_t>, arg[i])) {
+//			printf("Create thread error!\n");
+//			return;
+//		}
+//	}
+//
+//	pthread_join(th[0], NULL);
+//	pthread_join(th[1], NULL);
+//	pthread_join(th[2], NULL);
+//	pthread_join(th[3], NULL);
+//	return;
+//}
+
+//注意：此处有改：neon中的代码逻辑是将结果算好后直接覆盖，但是并行、tiling要求的是结果算好之后加上去
+inline void* matmul_ne_thr(register void* arg) {
 	//C+=AB;不验证可乘
 	int32_t* A_idx;
 	int32_t* B_idx;
@@ -100,17 +168,19 @@ inline void neon_s32(int32_t* A, int32_t* B, int32_t* C) {
 	int32x4_t C2;
 	int32x4_t C3;
 
-	for (int i_idx = 0; i_idx != M; i_idx += 4) {
-		for (int j_idx = 0; j_idx != N; j_idx += 4) {
-			// Zero accumulators before matrix op
-			C0 = vmovq_n_s32(0);
-			C1 = vmovq_n_s32(0);
-			C2 = vmovq_n_s32(0);
-			C3 = vmovq_n_s32(0);
-			for (int k_idx = 0; k_idx != L; k_idx += 4) {
+	register int i_idx, j_idx, k_idx;
+	for (i_idx = ((para<int>*)arg)->ifrom; i_idx != ((para<int>*)arg)->ito; i_idx += 4) {
+		for (j_idx = ((para<int>*)arg)->jfrom; j_idx != ((para<int>*)arg)->jto; j_idx += 4) {
+			// 改的是这五行
+			C_idx = ((para<int>*)arg)->c + N * i_idx + j_idx;
+			C0 = vld1q_s32(C_idx);
+			C1 = vld1q_s32(C_idx + N);
+			C2 = vld1q_s32(C_idx + (N << 1));
+			C3 = vld1q_s32(C_idx + ((N << 1) + N));
+			for (k_idx = ((para<int>*)arg)->kfrom; k_idx != ((para<int>*)arg)->kto; k_idx += 4) {
 				// Compute base index to 4x4 block
-				A_idx = A + L * i_idx + k_idx;
-				B_idx = B + j_idx + N * k_idx;
+				A_idx = ((para<int>*)arg)->a + L * i_idx + k_idx;
+				B_idx = ((para<int>*)arg)->b + j_idx + N * k_idx;
 
 				// Load most current A values in row 
 				B0 = vld1q_s32(B_idx);
@@ -144,7 +214,6 @@ inline void neon_s32(int32_t* A, int32_t* B, int32_t* C) {
 				C3 = vmlaq_laneq_s32(C3, B3, A3, 3);
 			}
 			// Compute base index for stores
-			C_idx = C + N * i_idx + j_idx;
 			vst1q_s32(C_idx, C0);
 			vst1q_s32(C_idx + N, C1);
 			vst1q_s32(C_idx + (N << 1), C2);
@@ -153,218 +222,113 @@ inline void neon_s32(int32_t* A, int32_t* B, int32_t* C) {
 	}
 }
 
-//(float)
-inline void neon_f32(float32_t* A, float32_t* B, float32_t* C) {
-	/*
-	* Multiply matrices A and B, store the result in C.
-	* It is the user's responsibility to make sure the matrices are compatible.
-	*/
-	float32_t* A_idx;
-	float32_t* B_idx;
-	float32_t* C_idx;
+inline void matthr_ne(int* a, int* b, int* c) {
+	pthread_t th[8];
+	para<int32_t>* arg[8];
 
-	// these are the columns of a 4x4 sub matrix of A
-	float32x4_t A0;
-	float32x4_t A1;
-	float32x4_t A2;
-	float32x4_t A3;
+	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), (N >> 1));
+	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, (N >> 1));
+	arg[2] = new para<int32_t>(a, b, c, 0, 0, (N >> 1), (L >> 1), (M >> 1), N);
+	arg[3] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), (N >> 1), L, M, N);
 
-	// these are the columns of a 4x4 sub matrix of B
-	float32x4_t B0;
-	float32x4_t B1;
-	float32x4_t B2;
-	float32x4_t B3;
+	arg[4] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), (N >> 1));
+	arg[5] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, (N >> 1));
+	arg[6] = new para<int32_t>(a, b, c, (L >> 1), 0, (N >> 1), L, (M >> 1), N);
+	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N);
 
-	// these are the columns of a 4x4 sub matrix of C
-	float32x4_t C0;
-	float32x4_t C1;
-	float32x4_t C2;
-	float32x4_t C3;
 
-	for (int32_t i_idx = 0; i_idx != N; i_idx += 4) {
-		for (int32_t j_idx = 0; j_idx != M; j_idx += 4) {
-			// Zero accumulators before matrix op
-			C0 = vmovq_n_f32(0);
-			C1 = vmovq_n_f32(0);
-			C2 = vmovq_n_f32(0);
-			C3 = vmovq_n_f32(0);
-			for (int32_t k_idx = 0; k_idx != L; k_idx += 4) {
-				// Compute base index to 4x4 block
-				A_idx = A + L * i_idx + k_idx;
-				B_idx = B + j_idx + N * k_idx;
-
-				// Load most current A values in row 
-				B0 = vld1q_f32(B_idx);
-				B1 = vld1q_f32(B_idx + N);
-				B2 = vld1q_f32(B_idx + (N << 1));
-				B3 = vld1q_f32(B_idx + (N << 1) + N);
-
-				// Multiply accumulate in 4x1 blocks, i.e. each column in C
-				A0 = vld1q_f32(A_idx);
-				C0 = vfmaq_laneq_f32(C0, B0, A0, 0);
-				C0 = vfmaq_laneq_f32(C0, B1, A0, 1);
-				C0 = vfmaq_laneq_f32(C0, B2, A0, 2);
-				C0 = vfmaq_laneq_f32(C0, B3, A0, 3);
-
-				A1 = vld1q_f32(A_idx + L);
-				C1 = vfmaq_laneq_f32(C1, B0, A1, 0);
-				C1 = vfmaq_laneq_f32(C1, B1, A1, 1);
-				C1 = vfmaq_laneq_f32(C1, B2, A1, 2);
-				C1 = vfmaq_laneq_f32(C1, B3, A1, 3);
-
-				A2 = vld1q_f32(A_idx + (L << 1));
-				C2 = vfmaq_laneq_f32(C2, B0, A2, 0);
-				C2 = vfmaq_laneq_f32(C2, B1, A2, 1);
-				C2 = vfmaq_laneq_f32(C2, B2, A2, 2);
-				C2 = vfmaq_laneq_f32(C2, B3, A2, 3);
-
-				A3 = vld1q_f32(A_idx + (L << 1) + L);
-				C3 = vfmaq_laneq_f32(C3, B0, A3, 0);
-				C3 = vfmaq_laneq_f32(C3, B1, A3, 1);
-				C3 = vfmaq_laneq_f32(C3, B2, A3, 2);
-				C3 = vfmaq_laneq_f32(C3, B3, A3, 3);
-			}
-			// Compute base index for stores
-			C_idx = C + N * i_idx + j_idx;
-			vst1q_f32(C_idx, C0);
-			vst1q_f32(C_idx + N, C1);
-			vst1q_f32(C_idx + (N << 1), C2);
-			vst1q_f32(C_idx + (N << 1) + N, C3);
+	for (int i = 0; i < 4; i++) {
+		if (pthread_create(th + i, NULL, matmul_ne_thr, arg[i])) {
+			printf("Create thread error!\n");
+			return;
 		}
 	}
-}
-
-inline void neon_p_s32(int32_t* A, int32_t* B, int32_t* C) {
-	//C+=AB;不验证可乘
-	int32_t* A_idx;
-	int32_t* B_idx;
-	int32_t* C_idx;
-
-	// these are the columns of a 4x4 sub matrix of A
-	int32x4_t A0;
-	int32x4_t A1;
-	int32x4_t A2;
-	int32x4_t A3;
-
-	// these are the columns of a 4x4 sub matrix of B
-	int32x4_t B0;
-	int32x4_t B1;
-	int32x4_t B2;
-	int32x4_t B3;
-
-	// these are the columns of a 4x4 sub matrix of C
-	int32x4_t C0;
-	int32x4_t C1;
-	int32x4_t C2;
-	int32x4_t C3;
-
-	parallel_for(size_t(0), size_t(N / 4), [&](size_t i_idx) {
-		for (int j_idx = 0; j_idx != M; j_idx += 4) {
-			// Zero accumulators before matrix op
-			C0 = vmovq_n_s32(0);
-			C1 = vmovq_n_s32(0);
-			C2 = vmovq_n_s32(0);
-			C3 = vmovq_n_s32(0);
-			for (int k_idx = 0; k_idx != L; k_idx += 4) {
-				// Compute base index to 4x4 block
-				A_idx = A + L * i_idx * 4 + k_idx;
-				B_idx = B + j_idx + N * k_idx;
-
-				// Load most current A values in row 
-				B0 = vld1q_s32(B_idx);
-				B1 = vld1q_s32(B_idx + N);
-				B2 = vld1q_s32(B_idx + (N << 1));
-				B3 = vld1q_s32(B_idx + N + (N << 1));
-
-				// Multiply accumulate in 4x1 blocks, i.e. each column in C
-				A0 = vld1q_s32(A_idx);
-				C0 = vmlaq_laneq_s32(C0, B0, A0, 0);
-				C0 = vmlaq_laneq_s32(C0, B1, A0, 1);
-				C0 = vmlaq_laneq_s32(C0, B2, A0, 2);
-				C0 = vmlaq_laneq_s32(C0, B3, A0, 3);
-
-				A1 = vld1q_s32(A_idx + L);
-				C1 = vmlaq_laneq_s32(C1, B0, A1, 0);
-				C1 = vmlaq_laneq_s32(C1, B1, A1, 1);
-				C1 = vmlaq_laneq_s32(C1, B2, A1, 2);
-				C1 = vmlaq_laneq_s32(C1, B3, A1, 3);
-
-				A2 = vld1q_s32(A_idx + (L << 1));
-				C2 = vmlaq_laneq_s32(C2, B0, A2, 0);
-				C2 = vmlaq_laneq_s32(C2, B1, A2, 1);
-				C2 = vmlaq_laneq_s32(C2, B2, A2, 2);
-				C2 = vmlaq_laneq_s32(C2, B3, A2, 3);
-
-				A3 = vld1q_s32(A_idx + (L << 1 + L));
-				C3 = vmlaq_laneq_s32(C3, B0, A3, 0);
-				C3 = vmlaq_laneq_s32(C3, B1, A3, 1);
-				C3 = vmlaq_laneq_s32(C3, B2, A3, 2);
-				C3 = vmlaq_laneq_s32(C3, B3, A3, 3);
-			}
-			// Compute base index for stores
-			C_idx = C + N * i_idx * 4 + j_idx;
-			vst1q_s32(C_idx, C0);
-			vst1q_s32(C_idx + N, C1);
-			vst1q_s32(C_idx + (N << 1), C2);
-			vst1q_s32(C_idx + (N << 1 + N), C3);
+	for (int i = 0; i < 4; i++) {
+		pthread_join(th[i], NULL);
+	}
+	for (int i = 4; i < 8; i++) {
+		if (pthread_create(th + i, NULL, matmul_ne_thr, arg[i])) {
+			printf("Create thread error!\n");
+			return;
 		}
-		});
+	}
+	for (int i = 4; i < 8; i++) {
+		pthread_join(th[i], NULL);
+	}
+	return;
 }
 
 template<typename tp>
-double countTime(void f(tp*, tp*, tp*), tp*a, tp*b, tp*c) {
-	auto start = std::chrono::system_clock::now();
-	auto end = std::chrono::system_clock::now();
-	double dure = 0.0;
-
-	for (int i = 0; i < FOR; i++) {
-		start = std::chrono::system_clock::now();
-		f(a, b, c);
-		end = std::chrono::system_clock::now();
-		dure += (end - start).count();
+void matmul_0(tp* a, tp* b, tp* c) {
+	register int i, j, k, km, im;
+	register tp tmp;
+	for (k = 0; k != L; ++k) {
+		km = k * M;
+		for (i = 0; i != M; ++i) {
+			im = i * M;
+			tmp = *(a + im + k);
+			for (j = 0; j != N; ++j) {
+				*(c + im + j) += tmp * *(b + km + j);
+			}
+		}
 	}
-	
-	for (int i = 0; i < M; ++i) {
+}
+
+template<typename tp>
+double countTime(void f(tp*, tp*, tp*), tp* a, tp* b, tp* c) {
+
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+	for (int i = 0; i < FOR; ++i) f(a, b, c);
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+	/*for (int i = 0; i < M; ++i) {
 		for (int j = 0; j < N; ++j) {
 			c[i * M + j] = 0;
 		}
-	}
-	return dure;
+	}*/
+
+	return time_span.count();
 }
 
 int main() {
-	srand((int)time(0));
+	srand(time_t(NULL));
 	//初始化两个二维数组
 	for (int k = 0; k < L; ++k) {
 		for (int i = 0; i < M; ++i) {
 			for (int j = 0; j < N; ++j) {
-				a_s[i * L + k] = rand();
-				b_s[k * N + j] = rand();
-				a_f[i * L + k] = rand();
-				b_f[k * N + j] = rand();
+				a_s[i * L + k] = i;// rand();
+				b_s[k * N + j] = k;// rand();
 			}
 		}
 	}
 
-	void (*s32[4])(int32_t*, int32_t*, int32_t*) = { matmul, neon_s32, neon_p_s32 };
-	std::cout << "size\t" << "\t" << "banchmark:\t" << "result_neon_1:\t" << endl;
-	for (int same = 256; same <= 1024; same *= 2) {
-		N = same, M = same, L = same;
-		std::cout << same << "\t\t";
-		for (int i = 0; i < 3; i++) {
-			std::cout << countTime(s32[i], a_s, b_s, c_s) << "\t";
-		}
-		std::cout << endl;
-	}
+	for (same = 8; same < 512; same <<= 1) {
+		M = N = L = same;
+		cout << same << ":" << endl;
+		cout << countTime(matthr, a_s, b_s, c_s) << endl;
+		cout << countTime(matthr_ne, a_s, b_s, d_s) << endl;
+		cout << countTime(matmul_0, a_s, b_s, e_s) << endl;
 
-	void (*f32[4])(float32_t*, float32_t*, float32_t*) = { matmul, neon_f32 };
-	std::cout << "size\t" << "\t" << "banchmark:\t" << "result_neon_1:\t" << endl;
-	for (int same = 256; same <= 1024; same *= 2) {
-		N = same, M = same, L = same;
-		std::cout << same << "\t\t";
-		for (int i = 0; i < 2; i++) {
-			std::cout << countTime(f32[i], a_f, b_f, c_f) << "\t";
+		int sign = 0;
+		for (int i = 0; i < M; ++i) {
+			for (int k = 0; k < N; ++k) {
+				if (c_s[i * N + k] != e_s[i * N + k]) {
+					sign = 1;
+				}
+			}
 		}
-		std::cout << endl;
+		cout << sign << endl;
+		sign = 0;
+		for (int i = 0; i < M; ++i) {
+			for (int k = 0; k < N; ++k) {
+				if (d_s[i * N + k] != e_s[i * N + k]) {
+					sign = 1;
+				}
+			}
+		}
+		cout << sign << endl;
 	}
+	
+	return 0;
 }

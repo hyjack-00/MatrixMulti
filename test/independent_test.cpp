@@ -93,7 +93,7 @@ void mm_neon_s32(int32_t *A, int32_t *B, int32_t *C, int m, int p, int n) {
 }
 
 int main() {
-    int loop = 100, size = 1024;
+    int loop = 20, size = 1024;
     int m = size, p = size, n = size;
     cout << "IndTest: Loop-" << loop
          << ", M-" << m 

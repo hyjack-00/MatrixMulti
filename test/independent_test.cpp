@@ -1,5 +1,5 @@
 #ifndef __ARM_NEON
-#define __ARM_NEON  // For highligh
+#define __ARM_NEON  // For code highlighting
 #endif
 
 #ifdef __ARM_NEON
@@ -200,7 +200,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
 }
 
 int main() {
-    int loop = 50, size = 512;
+    int loop = 100, size = 1024;
     int m = size, p = size, n = size;
     cout << "IndTest: Loop-" << loop
          << ", M-" << m 
@@ -216,8 +216,8 @@ int main() {
 
     start = Now;
     for (int l = 0; l < loop; l ++) {
-        mm_pthrd(A, B, C);
-        // mm_neon_s32(A.data, B.data, C.data, m, p, n);
+        // mm_pthrd(A, B, C);
+        mm_neon_s32(A.data, B.data, C.data, m, p, n);
     }
     end = Now;
     dur = Dur(start, end);
@@ -234,8 +234,4 @@ int main() {
     cout << "BenchMark GFLOPS: " << (double)2*m*p*n*loop/10/dur/1e9 << endl;
 }
 
-#else
-int main() {
-    return 0;
-}
 #endif 

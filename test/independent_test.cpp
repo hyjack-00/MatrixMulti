@@ -128,14 +128,6 @@ int main() {
     cout << "Optimized Time: " << dur << endl;
     cout << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
-    start = Now;
-    for (int l = 0; l < loop; l ++) {
-        mm_neon_f32_ikj(A.data, B.data, C.data, m, p, n);
-    }
-    end = Now;
-    dur = Dur(start, end);
-    cout << "Optimiz-2 Time: " << dur << endl;
-    cout << "Optimiz-2 GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 }
 
 #endif 

@@ -227,8 +227,8 @@ int main() {
     }
     end = Now;
     dur = Dur(start, end);
-    cout << "Optimaized Time: " << dur << endl;
-    cout << "Optimaized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
+    cout << "Optimized Time: " << dur << endl;
+    cout << "Optimized GOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
     start = Now;
     for (int l = 0; l < loop; l ++) {
@@ -237,7 +237,7 @@ int main() {
     end = Now;
     dur = Dur(start, end);
     cout << "Neon Time: " << dur << endl;
-    cout << "Neon GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
+    cout << "Neon GOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 }
 
 #endif 

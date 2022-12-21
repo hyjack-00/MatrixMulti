@@ -121,7 +121,7 @@ void * mm_kernel(void * arg_p) {
     int ib = arg->ibegin, ie = arg->iend;
 
     // debug
-    cout << std::to_string(ib) + "-" + std::to_string(ie) << endl;
+    // cout << std::to_string(ib) + "-" + std::to_string(ie) << endl;
 
     int32_t a, b, c;
     int32x4_t A0, A1, A2, A3;
@@ -194,7 +194,7 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
     args[3] = new Arg_s32(a, b, c, p, n, m3, m);
 
     // debug
-    cout << "pthread allocator" << m1 << ' ' << m2 << ' ' << m3 << ' ' << m << endl;
+    // cout << "pthread allocator" << m1 << ' ' << m2 << ' ' << m3 << ' ' << m << endl;
 
     for (int t = 0; t < 4; t ++)
         pthread_create(&threads[t], NULL, mm_kernel, args[t]);

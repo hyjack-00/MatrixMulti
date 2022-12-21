@@ -100,10 +100,10 @@ int main() {
         // test_cal_correct();
         // test_neon_s32();
         // test_neon_f32();
-        // test_neon_tile();
+        test_neon_tile();
         // test_pthrd();
-        test_pthrd_neon(pthr_G_kernel_benchmark_s32);
-        test_pthrd_neon(pthr_G_kernel_neon_s32);
+        // test_pthrd_neon(pthr_G_kernel_benchmark_s32);
+        // test_pthrd_neon(pthr_G_kernel_neon_s32);
     }
     cout << "Test end." << endl;
 

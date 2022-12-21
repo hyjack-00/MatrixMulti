@@ -256,24 +256,25 @@ int main() {
 		cout << countTime(matthr_ne, a_s, b_s, d_s) << endl;
 		cout << countTime(matmul_0, a_s, b_s, e_s) << endl;
 
-		int sign = 0;
-		for (int i = 0; i < M; ++i) {
-			for (int k = 0; k < N; ++k) {
-				if (c_s[i * N + k] != e_s[i * N + k]) {
-					sign = 1;
-				}
-			}
-		}
-		cout << sign << endl;
-		sign = 0;
-		for (int i = 0; i < M; ++i) {
-			for (int k = 0; k < N; ++k) {
-				if (d_s[i * N + k] != e_s[i * N + k]) {
-					sign = 1;
-				}
-			}
-		}
-		cout << sign << endl;
+		// // Correctness check
+		// int sign = 0;
+		// for (int i = 0; i < M; ++i) {
+		// 	for (int k = 0; k < N; ++k) {
+		// 		if (c_s[i * N + k] != e_s[i * N + k]) {
+		// 			sign = 1;
+		// 		}
+		// 	}
+		// }
+		// cout << sign << endl;
+		// sign = 0;
+		// for (int i = 0; i < M; ++i) {
+		// 	for (int k = 0; k < N; ++k) {
+		// 		if (d_s[i * N + k] != e_s[i * N + k]) {
+		// 			sign = 1;
+		// 		}
+		// 	}
+		// }
+		// cout << sign << endl;
 	}
 	
 	return 0;

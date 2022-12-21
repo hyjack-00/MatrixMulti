@@ -307,9 +307,9 @@ void test_pthrd() {
 }
 
 void test_neon_tile() {
-    int loop = 100, size = 512;
+    int loop = 10, size = 1024;
     int m = size, p = size, n = size;
-    int Ti_start = 32, Tj_start = 32, Tk_start = 32;
+    int Ti_start = 512, Tj_start = 512, Tk_start = 128;
     int Ti_end = size, Tj_end = size, Tk_end = size;
     int Ti_step = 32, Tj_step = 32, Tk_step = 32;
 

@@ -193,6 +193,9 @@ void mm_pthrd(Mat_1G_s32 &A, Mat_1G_s32 &B, Mat_1G_s32 &C) {
     args[2] = new Arg_s32(a, b, c, p, n, m2, m3);
     args[3] = new Arg_s32(a, b, c, p, n, m3, m);
 
+    // debug
+    cout << "pthread allocator" << m1 << ' ' << m2 << ' ' << m3 << ' ' << m << endl;
+
     for (int t = 0; t < 4; t ++)
         pthread_create(&threads[t], NULL, mm_kernel, args[t]);
     for (int t = 0; t < 4; t ++)

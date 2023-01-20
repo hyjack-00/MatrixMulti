@@ -218,14 +218,15 @@ void * kernel_neon_tile(void *pArg) {
     int32_t a,b,c;
     float32x4_t A0,A1,A2,A3,B0,B1,B2,B3,C0,C1,C2,C3;
 
+    for (int jj = 0; jj < n; jj += TJ) {
+    for (int kk = 0; kk < p; kk += TK) {
     for (int i = m_4 * tid; i < m_4 * (tid+1); i += 4) {
-        for (int jj = 0; jj < n; jj += TJ) {
-        for (int kk = 0; kk < p; kk += TK) {
-            for (int j = jj; j < jj+TJ; j += 4) {
-            C0 = vmovq_n_f32(0);
-            C1 = vmovq_n_f32(0);
-            C2 = vmovq_n_f32(0);
-            C3 = vmovq_n_f32(0);
+        for (int j = jj; j < jj+TJ; j += 4) {
+            c = i*n + j;
+            C0 = vld1q_f32(C + c);
+            C1 = vld1q_f32(C + c + n);
+            C2 = vld1q_f32(C + c + n*2);
+            C3 = vld1q_f32(C + c + n*3);
 
             for (int k = kk; k < kk+TK; k += 4) {
                 a = i*p + k;
@@ -261,15 +262,14 @@ void * kernel_neon_tile(void *pArg) {
 				C3 = vfmaq_laneq_f32(C3, B3, A3, 3);
             }
 
-            c = i*n + j;
             vst1q_f32(C + c, C0);
             vst1q_f32(C + c + n, C1);
             vst1q_f32(C + c + n*2, C2);
             vst1q_f32(C + c + n*3, C3);
         }
-        }
-        }
-    } 
+    }
+    }
+    }
     return nullptr;
 }
 

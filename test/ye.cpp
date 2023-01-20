@@ -44,7 +44,7 @@ struct para {
 
 #define BLOCK_I N
 #define BLOCK_J N
-#define BLOCK_K 256
+#define BLOCK_K N
 
 inline void * matmul_final_tr(void* arg) {
 	int N = ((para<int32_t>*)arg)->N;

@@ -144,22 +144,22 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[7] = new para<int32_t>(a, b, c, 0,   M/2, N/2, L/2, M,   N,   N, L);
 
 	pthread_create(th + 0, NULL, matmul_final_tr, arg[0]);
-	// pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
-	// pthread_create(th + 2, NULL, matmul_final_tr, arg[2]);
-	// pthread_create(th + 3, NULL, matmul_final_tr, arg[3]);
+	pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
+	pthread_create(th + 2, NULL, matmul_final_tr, arg[2]);
+	pthread_create(th + 3, NULL, matmul_final_tr, arg[3]);
 	pthread_join(th[0], NULL);
-	// pthread_join(th[1], NULL);
-	// pthread_join(th[2], NULL);
-	// pthread_join(th[3], NULL);
+	pthread_join(th[1], NULL);
+	pthread_join(th[2], NULL);
+	pthread_join(th[3], NULL);
 
-	// pthread_create(th + 4, NULL, matmul_final_tr, arg[4]);
-	// pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);
-	// pthread_create(th + 6, NULL, matmul_final_tr, arg[6]);
-	// pthread_create(th + 7, NULL, matmul_final_tr, arg[7]);
-	// pthread_join(th[4], NULL);
-	// pthread_join(th[5], NULL);
-	// pthread_join(th[6], NULL);
-	// pthread_join(th[7], NULL);
+	pthread_create(th + 4, NULL, matmul_final_tr, arg[4]);
+	pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);
+	pthread_create(th + 6, NULL, matmul_final_tr, arg[6]);
+	pthread_create(th + 7, NULL, matmul_final_tr, arg[7]);
+	pthread_join(th[4], NULL);
+	pthread_join(th[5], NULL);
+	pthread_join(th[6], NULL);
+	pthread_join(th[7], NULL);
 }
 
 template<typename tp>
@@ -186,9 +186,9 @@ int main() {
 			B.data[i] = rand();
 
 		cout << size << endl;
-		cout << "final/op: " 
-		     << countTime(matmul_final, A.data, B.data, C.data, size, size, size, loop) / loop
-			 << endl;
+		double time = countTime(matmul_final, A.data, B.data, C.data, size, size, size, loop);
+		cout << "time: " << time << endl
+		     << "GIPS: " << (double)2*m*p*n*loop/time/1e9 << endl;
 	}
 
 	return 0;

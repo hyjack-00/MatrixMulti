@@ -125,6 +125,26 @@ void * kernel_benchmark(void *pArg) {
     return nullptr;
 }
 
+#define TK 128
+void * kernel_benchmark_tile(void *pArg) {
+    Arg *arg = (Arg *) pArg;
+    float32_t *A = arg->A, *B = arg->B, *C = arg->C;
+    int m_4 = arg->m/4, p = arg->p, n = arg->n;
+    int tid = arg->tid;
+
+    for (int kk = 0; kk < p; kk += TK) {
+        for (int i = m_4 * tid; i < m_4 * (tid+1); i ++) {
+            for (int k = kk; k < kk+TK; k ++) {
+                int Aik = A[i*p + k];
+                for (int j = 0; j < n; j ++) {
+                    C[i*n + j] += Aik * B[k*n + j];
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
 void * kernel_neon(void *pArg) {
     Arg *arg = (Arg *) pArg;
     float32_t *A = arg->A, *B = arg->B, *C = arg->C;
@@ -330,6 +350,18 @@ int main() {
     end = Now;
     dur = Dur(start, end);
     cout << "pthread + neon" << endl
+         << "Optimized Time: " << dur << endl
+         << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
+
+    // pthread + bench + tile
+    memset(C.data, 0, sizeof(float)*m*n);
+    start = Now;
+    for (int l = 0; l < loop; l ++) {
+        mm_pthread(A.data, B.data, C.data, m, p, n, kernel_benchmark_tile);
+    }
+    end = Now;
+    dur = Dur(start, end);
+    cout << "pthread + bench + tile" << endl
          << "Optimized Time: " << dur << endl
          << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 

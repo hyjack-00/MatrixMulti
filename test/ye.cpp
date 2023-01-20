@@ -141,12 +141,12 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[7] = new para<int32_t>(a, b, c, 0,   M/2, N/2, L/2, M,   N,   N, L);
 
 	pthread_create(th + 0, NULL, matmul_final_tr, arg[0]);
-	pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
-	// pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
+	// pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
+	pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
 	// pthread_create(th + 3, NULL, matmul_final_tr, arg[4]);
 	pthread_join(th[0], NULL);
-	pthread_join(th[1], NULL);
-	// pthread_join(th[2], NULL);
+	// pthread_join(th[1], NULL);
+	pthread_join(th[2], NULL);
 	// pthread_join(th[3], NULL);
 
 	// pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);

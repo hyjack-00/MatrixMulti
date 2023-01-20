@@ -177,7 +177,7 @@ int main() {
 	srand(time_t(NULL));
 
 	int loop = 50;
-	int size = 128
+	int size = 128;
 	// for (int size = 128; size <= 4096; size *= 2) 
 	{
 		Mat A(size, size), B(size, size), C(size, size);

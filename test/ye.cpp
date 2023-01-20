@@ -79,10 +79,9 @@ inline void * matmul_final_tr(void* arg) {
 						C1 = vld1q_s32(C_idx + N);
 						C2 = vld1q_s32(C_idx + N*2);
 						C3 = vld1q_s32(C_idx + N*3);
+						printf("%d %d", i_idx, j_idx);
+						
 						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
-							
-							cout << i_idx << " " << j_idx << " " << k_idx << endl;
-
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;
 

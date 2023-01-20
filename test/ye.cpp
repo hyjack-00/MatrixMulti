@@ -42,9 +42,9 @@ struct para {
 		a(_a), b(_b), c(_c), kfrom(_kfrom), ifrom(_ifrom), jfrom(_jfrom), kto(_kto), ito(_ito), jto(_jto), N(_N), L(_L) {}
 };
 
-#define BLOCK_I N
-#define BLOCK_J N
-#define BLOCK_K N
+#define BLOCK_I 128
+#define BLOCK_J 128
+#define BLOCK_K 128
 
 inline void * matmul_final_tr(void* arg) {
 	int N = ((para<int32_t>*)arg)->N;
@@ -177,7 +177,7 @@ int main() {
 	srand(time_t(NULL));
 
 	int loop = 1;
-	for (int size = 256; size <= 4096; size *= 2)
+	for (int size = 256; size <= 2048; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);
 		for (int i = 0; i < size*size; i ++)
@@ -188,7 +188,7 @@ int main() {
 		cout << size << endl;
 		double time = countTime(matmul_final, A.data, B.data, C.data, size, size, size, loop);
 		cout << "time: " << time << endl
-		     << "GIPS: " << (double)2*m*p*n*loop/time/1e9 << endl;
+		     << "GIPS: " << (double)2*size*size*size*loop/time/1e9 << endl;
 	}
 
 	return 0;

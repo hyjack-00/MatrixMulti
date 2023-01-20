@@ -142,18 +142,21 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 
 	pthread_create(th + 0, NULL, matmul_final_tr, arg[0]);
 	pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
-	pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
-	pthread_create(th + 3, NULL, matmul_final_tr, arg[4]);
-	for (int i = 0; i < 4; i++)
-		pthread_join(th[i], NULL);
+	// pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
+	// pthread_create(th + 3, NULL, matmul_final_tr, arg[4]);
+	pthread_join(th[0], NULL);
+	pthread_join(th[1], NULL);
+	// pthread_join(th[2], NULL);
+	// pthread_join(th[3], NULL);
 
-	pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);
-	pthread_create(th + 6, NULL, matmul_final_tr, arg[6]);
-	pthread_create(th + 7, NULL, matmul_final_tr, arg[7]);
-	pthread_create(th + 8, NULL, matmul_final_tr, arg[8]);
-	for (int i = 4; i < 8; i++)
-		pthread_join(th[i], NULL);
-	return;
+	// pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);
+	// pthread_create(th + 6, NULL, matmul_final_tr, arg[6]);
+	// pthread_create(th + 7, NULL, matmul_final_tr, arg[7]);
+	// pthread_create(th + 8, NULL, matmul_final_tr, arg[8]);
+	// pthread_join(th[5], NULL);
+	// pthread_join(th[6], NULL);
+	// pthread_join(th[7], NULL);
+	// pthread_join(th[8], NULL);
 }
 
 template<typename tp>

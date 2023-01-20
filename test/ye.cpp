@@ -46,9 +46,9 @@ struct para {
 inline void * matmul_final_tr(void* arg) {
 	int N = ((para<int32_t>*)arg)->N;
 	int L = ((para<int32_t>*)arg)->L;
-	for (int i = ((para<int32_t>*)arg)->ifrom; i != ((para<int32_t>*)arg)->ito; i += BLOCK) {
-		for (int j = ((para<int32_t>*)arg)->jfrom; j != ((para<int32_t>*)arg)->jto; j += BLOCK) {
-			for (int k = ((para<int32_t>*)arg)->kfrom; k != ((para<int32_t>*)arg)->kto; k += BLOCK) {
+	for (int i = ((para<int32_t>*)arg)->ifrom; i < ((para<int32_t>*)arg)->ito; i += BLOCK) {
+		for (int j = ((para<int32_t>*)arg)->jfrom; j < ((para<int32_t>*)arg)->jto; j += BLOCK) {
+			for (int k = ((para<int32_t>*)arg)->kfrom; k < ((para<int32_t>*)arg)->kto; k += BLOCK) {
 				//C+=AB;不验证可乘
 				int32_t* A_idx;
 				int32_t* B_idx;
@@ -72,16 +72,16 @@ inline void * matmul_final_tr(void* arg) {
 				int32x4_t C2;
 				int32x4_t C3;
 
-				for (int i_idx = i; i_idx != i + BLOCK; i_idx += 4) {
-					for (int j_idx = j; j_idx != j + BLOCK; j_idx += 4) {
+				for (int i_idx = i; i_idx < i + BLOCK; i_idx += 4) {
+					for (int j_idx = j; j_idx < j + BLOCK; j_idx += 4) {
 						C_idx = ((para<int>*)arg)->c + N * i_idx + j_idx;
 						C0 = vld1q_s32(C_idx);
 						C1 = vld1q_s32(C_idx + N);
 						C2 = vld1q_s32(C_idx + N*2);
 						C3 = vld1q_s32(C_idx + N*3);
-						printf("%d %d %d %d\n", i, j, i_idx, j_idx);
+						// printf("%d %d %d %d\n", i, j, i_idx, j_idx);
 						
-						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
+						for (int k_idx = k; k_idx < k + BLOCK; k_idx += 4) {
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;
 
@@ -174,8 +174,7 @@ int main() {
 	srand(time_t(NULL));
 
 	int loop = 1;
-	int size = 128;
-	// for (int size = 128; size <= 4096; size *= 2)
+	for (int size = 256; size <= 4096; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);
 		for (int i = 0; i < size*size; i ++)

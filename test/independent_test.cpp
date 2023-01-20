@@ -317,17 +317,17 @@ int main() {
     //      << "Optimized Time: " << dur << endl
     //      << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
-    // // neon
-    // memset(C.data, 0, sizeof(float)*m*n);
-    // start = Now;
-    // for (int l = 0; l < loop; l ++) {
-    //     mm_neon(A.data, B.data, C.data, m, p, n);
-    // }
-    // end = Now;
-    // dur = Dur(start, end);
-    // cout << "neon" << endl
-    //      << "Optimized Time: " << dur << endl
-    //      << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
+    // neon
+    memset(C.data, 0, sizeof(float)*m*n);
+    start = Now;
+    for (int l = 0; l < loop; l ++) {
+        mm_neon(A.data, B.data, C.data, m, p, n);
+    }
+    end = Now;
+    dur = Dur(start, end);
+    cout << "neon" << endl
+         << "Optimized Time: " << dur << endl
+         << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 
     // pthread + benchmark
     memset(C.data, 0, sizeof(float)*m*n);

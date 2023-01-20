@@ -200,7 +200,7 @@ void mm_pthread(float32_t *A, float32_t *B, float32_t *C, int m, int p, int n, F
     for (int t = 0; t < 4; t ++)
         pthread_join(threads[t], NULL);
 
-    delete[] args;
+    // delete[] args;
     delete[] threads;
 }
 

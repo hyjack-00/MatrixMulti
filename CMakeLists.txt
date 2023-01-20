@@ -31,8 +31,6 @@ add_compile_options(-fopenmp)
 # add_compile_options(-static)
 # add_compile_options(-funroll-loops)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

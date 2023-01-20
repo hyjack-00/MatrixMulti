@@ -134,7 +134,7 @@ void * kernel_neon(void *pArg) {
     int32_t a,b,c;
     float32x4_t A0,A1,A2,A3,B0,B1,B2,B3,C0,C1,C2,C3;
 
-    for (int i = m_4 * tid; i < m_4 * (tid+1); i ++) {
+    for (int i = m_4 * tid; i < m_4 * (tid+1); i += 4) {
         for (int j = 0; j < n; j += 4) {
             C0 = vmovq_n_f32(0);
             C1 = vmovq_n_f32(0);
@@ -329,7 +329,7 @@ int main() {
     }
     end = Now;
     dur = Dur(start, end);
-    cout << " pthread + neon" << endl
+    cout << "pthread + neon" << endl
          << "Optimized Time: " << dur << endl
          << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
 

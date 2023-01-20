@@ -137,8 +137,7 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[6] = new para<int32_t>(a, b, c, (L >> 1), 0, (N >> 1), L, (M >> 1), N, N, L);
 	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N, N, L);
 
-
-	cout << "pth"
+	cout << "pth" << endl;
 	for (int i = 0; i < 4; i++) {
 		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
 			printf("Create thread error!\n");

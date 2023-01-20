@@ -72,16 +72,14 @@ inline void * matmul_final_tr(void* arg) {
 				int32x4_t C3;
 
 				for (int i_idx = i; i_idx != i + BLOCK; i_idx += 4) {
-					cout << "ii: " << i_idx << endl;
 					for (int j_idx = j; j_idx != j + BLOCK; j_idx += 4) {
-						cout << "  jj: " << j_idx << endl;
 						C_idx = ((para<int>*)arg)->c + N * i_idx + j_idx;
 						C0 = vld1q_s32(C_idx);
 						C1 = vld1q_s32(C_idx + N);
 						C2 = vld1q_s32(C_idx + (N << 1));
 						C3 = vld1q_s32(C_idx + ((N << 1) + N));
 						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
-							cout << "    kk: " << k_idx << endl;
+							cout << i_idx << " " << j_idx << " " << k_idx << endl;
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;
 

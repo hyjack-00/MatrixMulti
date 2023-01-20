@@ -76,17 +76,17 @@ inline void * matmul_final_tr(void* arg) {
 						C_idx = ((para<int>*)arg)->c + N * i_idx + j_idx;
 						C0 = vld1q_s32(C_idx);
 						C1 = vld1q_s32(C_idx + N);
-						C2 = vld1q_s32(C_idx + (N << 1));
-						C3 = vld1q_s32(C_idx + ((N << 1) + N));
+						C2 = vld1q_s32(C_idx + N*2);
+						C3 = vld1q_s32(C_idx + N*3);
 						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
-							cout << i_idx << " " << j_idx << " " << k_idx << endl;
+							// cout << i_idx << " " << j_idx << " " << k_idx << endl;
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;
 
 							B0 = vld1q_s32(B_idx);
 							B1 = vld1q_s32(B_idx + N);
-							B2 = vld1q_s32(B_idx + (N << 1));
-							B3 = vld1q_s32(B_idx + N + (N << 1));
+							B2 = vld1q_s32(B_idx + N*2);
+							B3 = vld1q_s32(B_idx + N*3);
 
 							A0 = vld1q_s32(A_idx);
 							C0 = vmlaq_laneq_s32(C0, B0, A0, 0);
@@ -100,13 +100,13 @@ inline void * matmul_final_tr(void* arg) {
 							C1 = vmlaq_laneq_s32(C1, B2, A1, 2);
 							C1 = vmlaq_laneq_s32(C1, B3, A1, 3);
 
-							A2 = vld1q_s32(A_idx + (L << 1));
+							A2 = vld1q_s32(A_idx + L*2);
 							C2 = vmlaq_laneq_s32(C2, B0, A2, 0);
 							C2 = vmlaq_laneq_s32(C2, B1, A2, 1);
 							C2 = vmlaq_laneq_s32(C2, B2, A2, 2);
 							C2 = vmlaq_laneq_s32(C2, B3, A2, 3);
 
-							A3 = vld1q_s32(A_idx + ((L << 1) + L));
+							A3 = vld1q_s32(A_idx + L*3);
 							C3 = vmlaq_laneq_s32(C3, B0, A3, 0);
 							C3 = vmlaq_laneq_s32(C3, B1, A3, 1);
 							C3 = vmlaq_laneq_s32(C3, B2, A3, 2);
@@ -114,8 +114,8 @@ inline void * matmul_final_tr(void* arg) {
 						}
 						vst1q_s32(C_idx, C0);
 						vst1q_s32(C_idx + N, C1);
-						vst1q_s32(C_idx + (N << 1), C2);
-						vst1q_s32(C_idx + ((N << 1) + N), C3);
+						vst1q_s32(C_idx + N*2, C2);
+						vst1q_s32(C_idx + N*3, C3);
 					}
 				}
 			}

@@ -80,8 +80,8 @@ inline void * matmul_final_tr(void* arg) {
 						C3 = vld1q_s32(C_idx + N*3);
 						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
 							
-							if (((para<int32_t>*)arg)->ifrom == 0 && ((para<int32_t>*)arg)->jfrom == 0)
-								cout << i_idx << " " << j_idx << " " << k_idx << endl;
+							int flag = (((para<int32_t>*)arg)->ifrom == 0) + 2 * (((para<int32_t>*)arg)->jfrom == 0)
+							cout << flag << "  " << i_idx << " " << j_idx << " " << k_idx << endl;
 
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;

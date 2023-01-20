@@ -209,6 +209,71 @@ void * kernel_benchmark_tile(void *pArg) {
     return nullptr;
 }
 
+void * kernel_neon_tile(void *pArg) {
+    Arg *arg = (Arg *) pArg;
+    float32_t *A = arg->A, *B = arg->B, *C = arg->C;
+    int m_4 = arg->m/4, p = arg->p, n = arg->n;
+    int tid = arg->tid;
+
+    int32_t a,b,c;
+    float32x4_t A0,A1,A2,A3,B0,B1,B2,B3,C0,C1,C2,C3;
+
+    for (int i = m_4 * tid; i < m_4 * (tid+1); i += 4) {
+        for (int jj = 0; jj < n; jj += TJ) {
+        for (int kk = 0; kk < p; kk += TK) {
+            for (int j = jj; j < jj+TJ; j += 4) {
+            C0 = vmovq_n_f32(0);
+            C1 = vmovq_n_f32(0);
+            C2 = vmovq_n_f32(0);
+            C3 = vmovq_n_f32(0);
+
+            for (int k = kk; k < kk+TK; k += 4) {
+                a = i*p + k;
+                b = k*n + j;
+
+                B0 = vld1q_f32(B + b);
+				B1 = vld1q_f32(B + b + n);
+				B2 = vld1q_f32(B + b + n*2);
+				B3 = vld1q_f32(B + b + n*3);
+
+                A0 = vld1q_f32(A + a);
+                C0 = vfmaq_laneq_f32(C0, B0, A0, 0);
+				C0 = vfmaq_laneq_f32(C0, B1, A0, 1);
+				C0 = vfmaq_laneq_f32(C0, B2, A0, 2);
+				C0 = vfmaq_laneq_f32(C0, B3, A0, 3);
+
+				A1 = vld1q_f32(A + a + p);
+				C1 = vfmaq_laneq_f32(C1, B0, A1, 0);
+				C1 = vfmaq_laneq_f32(C1, B1, A1, 1);
+				C1 = vfmaq_laneq_f32(C1, B2, A1, 2);
+				C1 = vfmaq_laneq_f32(C1, B3, A1, 3);
+
+				A2 = vld1q_f32(A + a + p*2);
+				C2 = vfmaq_laneq_f32(C2, B0, A2, 0);
+				C2 = vfmaq_laneq_f32(C2, B1, A2, 1);
+				C2 = vfmaq_laneq_f32(C2, B2, A2, 2);
+				C2 = vfmaq_laneq_f32(C2, B3, A2, 3);
+
+				A3 = vld1q_f32(A + a + p*3);
+				C3 = vfmaq_laneq_f32(C3, B0, A3, 0);
+				C3 = vfmaq_laneq_f32(C3, B1, A3, 1);
+				C3 = vfmaq_laneq_f32(C3, B2, A3, 2);
+				C3 = vfmaq_laneq_f32(C3, B3, A3, 3);
+            }
+
+            c = i*n + j;
+            vst1q_f32(C + c, C0);
+            vst1q_f32(C + c + n, C1);
+            vst1q_f32(C + c + n*2, C2);
+            vst1q_f32(C + c + n*3, C3);
+        }
+        }
+        }
+    } 
+    return nullptr;
+}
+
+
 void mm_pthread(float32_t *A, float32_t *B, float32_t *C, int m, int p, int n, Func_t func_mm) {
     pthread_t *threads;
     threads = new pthread_t[4];

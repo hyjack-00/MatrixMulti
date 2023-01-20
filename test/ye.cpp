@@ -138,6 +138,7 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N, N, L);
 
 
+	cout << "pth"
 	for (int i = 0; i < 4; i++) {
 		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
 			printf("Create thread error!\n");
@@ -174,7 +175,7 @@ double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, in
 int main() {
 	srand(time_t(NULL));
 
-	int loop = 50; 
+	int loop = 50;
 	for (int size = 128; size <= 4096; size *= 2) {
 		Mat A(size, size), B(size, size), C(size, size);
 		for (int i = 0; i < size*size; i ++)

@@ -142,8 +142,8 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 
 	pthread_create(th + 0, NULL, matmul_final_tr, arg[0]);
 	// pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
-	pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
-	// pthread_create(th + 3, NULL, matmul_final_tr, arg[4]);
+	pthread_create(th + 2, NULL, matmul_final_tr, arg[2]);
+	// pthread_create(th + 3, NULL, matmul_final_tr, arg[3]);
 	pthread_join(th[0], NULL);
 	// pthread_join(th[1], NULL);
 	pthread_join(th[2], NULL);

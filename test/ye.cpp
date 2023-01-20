@@ -176,7 +176,7 @@ double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, in
 int main() {
 	srand(time_t(NULL));
 
-	int loop = 1;
+	int loop = 100;
 	for (int size = 256; size <= 2048; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);

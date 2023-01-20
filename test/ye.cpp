@@ -140,13 +140,13 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[6] = new para<int32_t>(a, b, c, L/2, 0,   N/2, L,   M/2, N,   N, L);
 	arg[7] = new para<int32_t>(a, b, c, 0,   M/2, N/2, L/2, M,   N,   N, L);
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
 			printf("Create thread error!\n");
 			return;
 		}
 	}
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 4; i++) {
 		pthread_join(th[i], NULL);
 	}
 	// for (int i = 4; i < 8; i++) {
@@ -176,7 +176,7 @@ int main() {
 	srand(time_t(NULL));
 
 	int loop = 1;
-	int size = 512;
+	int size = 128;
 	// for (int size = 128; size <= 4096; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);

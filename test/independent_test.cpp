@@ -108,7 +108,7 @@ struct Arg {
 };
 typedef void * (*Func_t) (void *);
 
-void kernel_benchmark(void *pArg) {
+void * kernel_benchmark(void *pArg) {
     Arg *arg = (Arg *) pArg;
     float32_t *A = arg->A, *B = arg->B, *C = arg->C;
     int m_4 = arg->m/4, p = arg->p, n = arg->n;
@@ -124,7 +124,7 @@ void kernel_benchmark(void *pArg) {
     }
 }
 
-void kernel_neon(void *pArg) {
+void * kernel_neon(void *pArg) {
     Arg *arg = (Arg *) pArg;
     float32_t *A = arg->A, *B = arg->B, *C = arg->C;
     int m_4 = arg->m/4, p = arg->p, n = arg->n;
@@ -355,7 +355,7 @@ int main() {
     cout << "omp + benchmark" << endl
          << "Optimized Time: " << dur << endl
          << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
-         
+
 }
 
 #endif 

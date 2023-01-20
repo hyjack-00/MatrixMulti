@@ -164,7 +164,6 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 
 template<typename tp>
 double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, int l, int n, int loop) {
-
 	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < loop; ++i)
 		f(a, b, c, m, l, n);
@@ -178,7 +177,7 @@ int main() {
 	srand(time_t(NULL));
 
 	int loop = 1;
-	int size = 256;
+	int size = 512;
 	// for (int size = 128; size <= 4096; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);

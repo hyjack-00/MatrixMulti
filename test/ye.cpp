@@ -80,8 +80,7 @@ inline void * matmul_final_tr(void* arg) {
 						C3 = vld1q_s32(C_idx + N*3);
 						for (int k_idx = k; k_idx != k + BLOCK; k_idx += 4) {
 							
-							int flag = (((para<int32_t>*)arg)->ifrom == 0) + 2 * (((para<int32_t>*)arg)->jfrom == 0);
-							cout << flag << "  " << i_idx << " " << j_idx << " " << k_idx << endl;
+							cout << i_idx << " " << j_idx << " " << k_idx << endl;
 
 							A_idx = ((para<int32_t>*)arg)->a + L * i_idx + k_idx;
 							B_idx = ((para<int32_t>*)arg)->b + j_idx + N * k_idx;
@@ -141,24 +140,24 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[6] = new para<int32_t>(a, b, c, (L >> 1), 0, (N >> 1), L, (M >> 1), N, N, L);
 	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N, N, L);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 1; i++) {
 		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
 			printf("Create thread error!\n");
 			return;
 		}
 	}
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 1; i++) {
 		pthread_join(th[i], NULL);
 	}
-	for (int i = 4; i < 8; i++) {
-		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
-			printf("Create thread error!\n");
-			return;
-		}
-	}
-	for (int i = 4; i < 8; i++) {
-		pthread_join(th[i], NULL);
-	}
+	// for (int i = 4; i < 8; i++) {
+	// 	if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
+	// 		printf("Create thread error!\n");
+	// 		return;
+	// 	}
+	// }
+	// for (int i = 4; i < 8; i++) {
+	// 	pthread_join(th[i], NULL);
+	// }
 	return;
 }
 

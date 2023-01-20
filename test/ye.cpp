@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <arm_neon.h>
+
 #define MIN(x,y) (x<y?x:y)
 #define MAX(x,y) (x>y?x:y)
 #define MAXN 0xffffff//2^24,所以矩阵规模不要大于4096
@@ -130,15 +131,15 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	pthread_t th[8];
 	para<int32_t>* arg[8];
 
-	arg[0] = new para<int32_t>(a, b, c, 0, 0, 0, (L >> 1), (M >> 1), (N >> 1), N, L);
-	arg[1] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), 0, L, M, (N >> 1), N, L);
-	arg[2] = new para<int32_t>(a, b, c, 0, 0, (N >> 1), (L >> 1), (M >> 1), N, N, L);
-	arg[3] = new para<int32_t>(a, b, c, (L >> 1), (M >> 1), (N >> 1), L, M, N, N, L);
+	arg[0] = new para<int32_t>(a, b, c, 0,   0,   0,   L/2, M/2, N/2, N, L);
+	arg[1] = new para<int32_t>(a, b, c, L/2, M/2, 0,   L,   M,   N/2, N, L);
+	arg[2] = new para<int32_t>(a, b, c, 0,   0,   N/2, L/2, M/2, N,   N, L);
+	arg[3] = new para<int32_t>(a, b, c, L/2, M/2, N/2, L,   M,   N,   N, L);
 
-	arg[4] = new para<int32_t>(a, b, c, (L >> 1), 0, 0, L, (M >> 1), (N >> 1), N, L);
-	arg[5] = new para<int32_t>(a, b, c, 0, (M >> 1), 0, (L >> 1), M, (N >> 1), N, L);
-	arg[6] = new para<int32_t>(a, b, c, (L >> 1), 0, (N >> 1), L, (M >> 1), N, N, L);
-	arg[7] = new para<int32_t>(a, b, c, 0, (M >> 1), (N >> 1), (L >> 1), M, N, N, L);
+	arg[4] = new para<int32_t>(a, b, c, L/2, 0,   0,   L,   M/2, N/2, N, L);
+	arg[5] = new para<int32_t>(a, b, c, 0,   M/2, 0,   L/2, M,   N/2, N, L);
+	arg[6] = new para<int32_t>(a, b, c, L/2, 0,   N/2, L,   M/2, N,   N, L);
+	arg[7] = new para<int32_t>(a, b, c, 0,   M/2, N/2, L/2, M,   N,   N, L);
 
 	for (int i = 0; i < 1; i++) {
 		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
@@ -176,9 +177,9 @@ double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, in
 int main() {
 	srand(time_t(NULL));
 
-	int loop = 50;
-	int size = 128;
-	// for (int size = 128; size <= 4096; size *= 2) 
+	int loop = 1;
+	int size = 256;
+	// for (int size = 128; size <= 4096; size *= 2)
 	{
 		Mat A(size, size), B(size, size), C(size, size);
 		for (int i = 0; i < size*size; i ++)
@@ -187,7 +188,7 @@ int main() {
 			B.data[i] = rand();
 
 		cout << size << endl;
-		cout << "final: " 
+		cout << "final/op: " 
 		     << countTime(matmul_final, A.data, B.data, C.data, size, size, size, loop) / loop
 			 << endl;
 	}

@@ -355,7 +355,7 @@ int main() {
     cout << "omp + benchmark" << endl
          << "Optimized Time: " << dur << endl
          << "Optimized GFLOPS: " << (double)2*m*p*n*loop/dur/1e9 << endl;
-    
+         
 }
 
 #endif 

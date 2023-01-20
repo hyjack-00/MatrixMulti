@@ -197,9 +197,8 @@ void mm_pthread(float32_t *A, float32_t *B, float32_t *C, int m, int p, int n, F
         pthread_create(&threads[t], NULL, func_mm, &args[t]);
     for (int t = 0; t < 4; t ++)
         pthread_join(threads[t], NULL);
-    
-    for (int t = 0; t < 4; t ++) 
-        delete args[t];
+
+    delete[] args;
     delete[] threads;
 }
 

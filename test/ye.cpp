@@ -140,24 +140,19 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 	arg[6] = new para<int32_t>(a, b, c, L/2, 0,   N/2, L,   M/2, N,   N, L);
 	arg[7] = new para<int32_t>(a, b, c, 0,   M/2, N/2, L/2, M,   N,   N, L);
 
-	for (int i = 0; i < 4; i++) {
-		if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
-			printf("Create thread error!\n");
-			return;
-		}
-	}
-	for (int i = 0; i < 4; i++) {
+	pthread_create(th + 0, NULL, matmul_final_tr, arg[0]);
+	pthread_create(th + 1, NULL, matmul_final_tr, arg[1]);
+	pthread_create(th + 2, NULL, matmul_final_tr, arg[3]);
+	pthread_create(th + 3, NULL, matmul_final_tr, arg[4]);
+	for (int i = 0; i < 4; i++)
 		pthread_join(th[i], NULL);
-	}
-	// for (int i = 4; i < 8; i++) {
-	// 	if (pthread_create(th + i, NULL, matmul_final_tr, arg[i])) {
-	// 		printf("Create thread error!\n");
-	// 		return;
-	// 	}
-	// }
-	// for (int i = 4; i < 8; i++) {
-	// 	pthread_join(th[i], NULL);
-	// }
+
+	pthread_create(th + 5, NULL, matmul_final_tr, arg[5]);
+	pthread_create(th + 6, NULL, matmul_final_tr, arg[6]);
+	pthread_create(th + 7, NULL, matmul_final_tr, arg[7]);
+	pthread_create(th + 8, NULL, matmul_final_tr, arg[8]);
+	for (int i = 4; i < 8; i++)
+		pthread_join(th[i], NULL);
 	return;
 }
 

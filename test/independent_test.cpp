@@ -292,7 +292,7 @@ void mm_omp_neon(float32_t *A, float32_t *B, float32_t *C, int m, int p, int n) 
 }
 
 int main() {
-    int loop = 10, size = 1024;
+    int loop = 10, size = 512;
     int m = size, p = size, n = size;
     cout << "Test: Loop-" << loop
          << ", M-" << m 

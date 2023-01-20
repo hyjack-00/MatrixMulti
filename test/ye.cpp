@@ -160,10 +160,7 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 }
 
 template<typename tp>
-double countTime(void f(tp*,tp*,tp*), 
-           		 tp* a, tp* b, tp* c,
-				 int m, int l, int n,
-				 int loop) {
+double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, int l, int n, int loop) {
 
 	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < loop; ++i)
@@ -187,8 +184,7 @@ int main() {
 
 		cout << size << endl;
 		cout << "final: " 
-		     << countTime(matmul_final, A.data, B.data, C.data, 
-			              size, size, size, loop) / loop
+		     << countTime(matmul_final, A.data, B.data, C.data, size, size, size, loop) / loop
 			 << endl;
 	}
 

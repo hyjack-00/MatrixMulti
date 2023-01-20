@@ -42,7 +42,7 @@ struct para {
 		a(_a), b(_b), c(_c), kfrom(_kfrom), ifrom(_ifrom), jfrom(_jfrom), kto(_kto), ito(_ito), jto(_jto), N(_N), L(_L) {}
 };
 
-#define BLOCK 128
+#define BLOCK 256
 inline void * matmul_final_tr(void* arg) {
 	int N = ((para<int32_t>*)arg)->N;
 	int L = ((para<int32_t>*)arg)->L;

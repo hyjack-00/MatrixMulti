@@ -164,10 +164,10 @@ inline void matmul_final(int* a, int* b, int* c, int M, int L, int N) {
 
 template<typename tp>
 double countTime(void f(tp*,tp*,tp*,int,int,int), tp* a, tp* b, tp* c, int m, int l, int n, int loop) {
-	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+	auto t1 = std::chrono::system_clock::now();
 	for (int i = 0; i < loop; ++i)
 		f(a, b, c, m, l, n);
-	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	auto t2 = std::chrono::system_clock::now();
 	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
 
 	return time_span.count();

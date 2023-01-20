@@ -122,6 +122,7 @@ void * kernel_benchmark(void *pArg) {
             }
         }
     }
+    return nullptr;
 }
 
 void * kernel_neon(void *pArg) {
@@ -181,6 +182,7 @@ void * kernel_neon(void *pArg) {
             vst1q_f32(C + c + n*3, C3);
         }
     } 
+    return nullptr;
 }
 
 void mm_pthread(float32_t *A, float32_t *B, float32_t *C, int m, int p, int n, Func_t func_mm) {
